@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mo.G Academy — Course Player (Placeholder)</title>
+  <style>
+    :root{
+      --orange:#ff9e0c;
+      --black:#111111;
+      --muted:#6b6b6b;
+      --line:#e9e9e9;
+      --bg:#ffffff;
+      --soft:#fafafa;
+      --radius:18px;
+      --shadow: 0 16px 40px rgba(0,0,0,0.10);
+      --shadow2: 0 10px 22px rgba(0,0,0,0.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--black);
+    }
+    a{color:inherit}
+    .top-accent{
+      height:10px;
+      background: var(--orange);
+      width:100%;
+    }
+
+    .wrap{
+      min-height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .container{
+      width:min(1200px, 100%);
+      margin:0 auto;
+      padding: 16px 18px 22px;
+    }
+
+    /* Header */
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .head-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding: 14px 18px;
+      width:min(1200px, 100%);
+      margin:0 auto;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:12px;
+      background: var(--orange);
+      display:grid;place-items:center;
+      font-weight:900;
+      letter-spacing:0.4px;
+      user-select:none;
+    }
+    .brandtxt .name{
+      font-weight:900;
+      font-size:15px;
+      line-height:1.1;
+    }
+    .brandtxt .tag{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .nav{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex:1;
+      flex-wrap:wrap;
+    }
+    .nav a{
+      text-decoration:none;
+      font-size:13px;
+      font-weight:800;
+      padding:10px 12px;
+      border-radius: 999px;
+      border:1px solid transparent;
+      background: transparent;
+      transition:0.18s ease;
+    }
+    .nav a:hover{
+      background: var(--soft);
+      border-color: rgba(17,17,17,0.12);
+      box-shadow: var(--shadow2);
+      transform: translateY(-1px);
+    }
+    .nav a.active{
+      background: rgba(255,158,12,0.14);
+      border-color: rgba(255,158,12,0.55);
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:flex-end;
+      min-width: 220px;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:13px;
+      font-weight:800;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      cursor:pointer;
+      transition:0.18s ease;
+      user-select:none;
+    }
+    .chip:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+      border-color: rgba(17,17,17,0.18);
+    }
+
+    /* Main layout */
+    main{
+      flex:1;
+      padding-top: 8px;
+    }
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .card-pad{padding:16px}
+
+    /* Video */
+    .video-shell{
+      border-radius: 20px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:#000;
+    }
+    video{
+      width:100%;
+      height:auto;
+      display:block;
+      background:#000;
+    }
+    .video-meta{
+      padding:14px 2px 0;
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      border:1px solid rgba(17,17,17,0.12);
+      background:#fafafa;
+      font-weight:900;
+    }
+    h1{
+      margin:10px 0 6px 0;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:0.2px;
+    }
+    .desc{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    /* Prev/Next */
+    .pn{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:1px solid rgba(17,17,17,0.14);
+      background:#fff;
+      padding:11px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-size:13px;
+      transition:0.18s ease;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+    }
+    .btn.primary{
+      background: var(--black);
+      color:#fff;
+      border-color: var(--black);
+    }
+    .btn:disabled{
+      opacity:0.45;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    /* Comments */
+    .comments-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .comments-head h2{
+      margin:0;
+      font-size:14px;
+      font-weight:1000;
+    }
+    .comments-head small{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+    .comment-form{
+      display:grid;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    textarea{
+      width:100%;
+      min-height:90px;
+      resize:vertical;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background:#fafafa;
+      outline:none;
+      font-size:13px;
+      line-height:1.5;
+      transition:0.2s ease;
+    }
+    textarea:focus{
+      border-color: rgba(255,158,12,0.7);
+      box-shadow: 0 0 0 4px rgba(255,158,12,0.18);
+      background:#fff;
+    }
+    .comment-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .comment{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background:#fff;
+      transition:0.18s ease;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .comment:hover{
+      border-color: rgba(17,17,17,0.18);
+      box-shadow: var(--shadow2);
+      transform: translateY(-1px);
+    }
+    .avatar{
+      width:36px;height:36px;border-radius:12px;
+      background: rgba(255,158,12,0.16);
+      border:1px solid rgba(255,158,12,0.35);
+      display:grid;place-items:center;
+      font-weight:1000;
+      font-size:12px;
+      user-select:none;
+      flex: 0 0 auto;
+    }
+    .cbody b{
+      display:block;
+      font-size:13px;
+      margin-bottom:3px;
+      font-weight:1000;
+    }
+    .cbody small{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .cbody p{
+      margin:8px 0 0 0;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .comment-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    /* Curriculum */
+    .side-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .side-head h2{
+      margin:0;
+      font-size:14px;
+      font-weight:1000;
+    }
+    .side-head small{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+      display:block;
+      margin-top:2px;
+    }
+    .progress-pill{
+      font-size:12px;
+      font-weight:1000;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,158,12,0.16);
+      border:1px solid rgba(255,158,12,0.35);
+      white-space:nowrap;
+      height:fit-content;
+      user-select:none;
+    }
+
+    .lesson-list{
+      display:grid;
+      gap:8px;
+      max-height: 560px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .lesson{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding:12px;
+      background:#fff;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:0.18s ease;
+      user-select:none;
+    }
+    .lesson:hover{
+      border-color: rgba(255,158,12,0.5);
+      box-shadow: var(--shadow2);
+      transform: translateY(-1px);
+    }
+    .lesson.active{
+      background: rgba(255,158,12,0.12);
+      border-color: rgba(255,158,12,0.65);
+    }
+    .l-left{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      min-width:0;
+    }
+    .check{
+      width:22px;height:22px;border-radius:8px;
+      border:1px solid rgba(17,17,17,0.14);
+      display:grid;place-items:center;
+      font-weight:1000;
+      font-size:12px;
+      background:#fff;
+      flex: 0 0 auto;
+    }
+    .check.watched{
+      background: var(--black);
+      border-color: var(--black);
+      color:#fff;
+    }
+    .ltxt{
+      min-width:0;
+    }
+    .ltxt b{
+      display:block;
+      font-size:13px;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 230px;
+    }
+    .ltxt small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:3px;
+    }
+    .duration{
+      font-size:12px;
+      font-weight:1000;
+      color:var(--black);
+      padding:8px 10px;
+      border-radius:999px;
+      background:#fafafa;
+      border:1px solid rgba(17,17,17,0.12);
+      white-space:nowrap;
+      height:fit-content;
+      flex:0 0 auto;
+      user-select:none;
+    }
+
+    /* Footer */
+    footer{
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+    .foot{
+      width:min(1200px, 100%);
+      margin:0 auto;
+      padding:16px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .foot a{
+      text-decoration:none;
+      color:var(--black);
+      font-weight:1000;
+      border-bottom:1px solid rgba(17,17,17,0.18);
+      padding-bottom:2px;
+    }
+
+    /* Mobile */
+    @media (max-width: 980px){
+      .layout{grid-template-columns: 1fr}
+      .lesson-list{max-height: 360px}
+      .brand{min-width:auto}
+      .actions{min-width:auto}
+      .nav{justify-content:flex-start}
+      .ltxt b{max-width: 100%}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top-accent"></div>
+
+    <header>
+      <div class="head-row">
+        <div class="brand" role="banner">
+          <div class="logo" title="Mo.G Academy">Mo.G</div>
+          <div class="brandtxt">
+            <div class="name">Mo.G Academy</div>
+            <div class="tag">Course Player (placeholder)</div>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="/student_dashboard.html">Dashboard</a>
+          <a href="/courses.html" class="active">My Courses</a>
+          <a href="/community.html">Community</a>
+          <a href="/downloads.html">Downloads</a>
+          <a href="/account.html">Account</a>
+        </nav>
+
+        <div class="actions">
+          <div class="chip" title="Notifications">🔔 <span style="color:var(--muted);font-weight:900;">2</span></div>
+          <div class="chip" title="Profile">👤 <span style="font-weight:1000;">Student</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="layout">
+
+          <!-- LEFT: Video + meta + comments -->
+          <section aria-label="Lesson content">
+            <div class="video-shell" aria-label="Video player">
+              <!-- Placeholder source. Replace with a Cloudflare Stream embed or a signed/public mp4 URL. -->
+              <video id="player" controls preload="metadata" playsinline>
+  <source
+    src="https://mog-academy.com/SnapInsta.to_AQPTU_a_UtB_EyFJi1Cjg5DGFhwznsxLWO9xmCZJ63aqbj93EEPyR3_yuMyrJOyeOS0GSfxKVgRYlqUq6HTurQrwlrci4jv-Z8eri2I.mp4"
+    type="video/mp4"
+  />
+  Your browser does not support the video tag.
+</video>
+
+            </div>
+
+            <div class="video-meta">
+              <div class="kicker" id="courseKicker">Course · Placeholder</div>
+              <h1 id="lessonTitle">Lesson Title — Placeholder</h1>
+              <p class="desc" id="lessonDesc">
+                This is a placeholder description. Later this will come from your database (lesson description, notes, links, and resources).
+              </p>
+
+              <div class="pn" aria-label="Lesson navigation">
+                <button class="btn" id="prevBtn" type="button" disabled>← Previous</button>
+                <button class="btn primary" id="nextBtn" type="button">Next →</button>
+              </div>
+            </div>
+
+            <div style="height:14px"></div>
+
+            <div class="card">
+              <div class="card-pad">
+                <div class="comments-head">
+                  <div>
+                    <h2>Comments</h2>
+                    <small>Placeholder only. Later you’ll connect this to your database so students can post + reply.</small>
+                  </div>
+                  <div class="progress-pill" id="commentCountPill">3 comments</div>
+                </div>
+
+                <form class="comment-form" id="commentForm">
+                  <textarea id="commentInput" placeholder="Write a comment… (placeholder)"></textarea>
+                  <div class="comment-actions">
+                    <button class="btn" type="button" id="clearCommentBtn">Clear</button>
+                    <button class="btn primary" type="submit" id="postCommentBtn">Post comment</button>
+                  </div>
+                </form>
+
+                <div class="comment-list" id="commentList">
+                  <div class="comment">
+                    <div class="avatar">MG</div>
+                    <div class="cbody">
+                      <b>Mo.G</b>
+                      <small>Today · 2:14 PM</small>
+                      <p>Placeholder comment. This is where students will discuss the lesson.</p>
+                    </div>
+                  </div>
+
+                  <div class="comment">
+                    <div class="avatar">JD</div>
+                    <div class="cbody">
+                      <b>John Doe</b>
+                      <small>Today · 3:02 PM</small>
+                      <p>Love the pacing. The “no BS” breakdown makes it easy to follow.</p>
+                    </div>
+                  </div>
+
+                  <div class="comment">
+                    <div class="avatar">SA</div>
+                    <div class="cbody">
+                      <b>Student A</b>
+                      <small>Today · 4:30 PM</small>
+                      <p>Can you share recommended settings for export quality? (placeholder)</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+          <!-- RIGHT: Curriculum -->
+          <aside class="card" aria-label="Curriculum sidebar">
+            <div class="card-pad">
+              <div class="side-head">
+                <div>
+                  <h2>Curriculum</h2>
+                  <small>Watched status + durations shown (placeholder data)</small>
+                </div>
+                <div class="progress-pill" id="progressPill">1 / 6</div>
+              </div>
+
+              <div class="lesson-list" id="lessonList" role="listbox" aria-label="Lessons list">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="foot">
+        <div>© <span id="y"></span> Mo.G Academy</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
+          <a href="/support.html">Support</a>
+          <a href="mailto:hello@mog-academy.com">hello@mog-academy.com</a>
+          <a href="/privacy.html">Privacy</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Placeholder curriculum data (replace later with database/API)
+    const course = {
+      title: "Render to Revenue — Foundations",
+      lessons: [
+        {
+          id: "l01",
+          title: "Welcome + How to use this course",
+          description: "How the course is structured, how to move fast, and how to avoid wasting time.",
+          duration: "04:12",
+          watched: true,
+          // Replace with: Cloudflare Stream embed flow OR signed/public mp4 link
+          videoUrl: ""
+        },
+        {
+          id: "l02",
+          title: "What makes visualization sell (beyond pretty)",
+          description: "The mindset shift that changes how clients perceive your work and your pricing.",
+          duration: "12:48",
+          watched: false,
+          videoUrl: ""
+        },
+        {
+          id: "l03",
+          title: "Camera language that sells",
+          description: "Framing, rhythm, and sequencing: the stuff that actually converts.",
+          duration: "10:06",
+          watched: false,
+          videoUrl: ""
+        },
+        {
+          id: "l04",
+          title: "Lighting choices (emotion + clarity)",
+          description: "A practical approach to lighting that feels premium but stays efficient.",
+          duration: "14:22",
+          watched: false,
+          videoUrl: ""
+        },
+        {
+          id: "l05",
+          title: "Materials that read on marketing",
+          description: "How to push materials so they read correctly in motion and on social.",
+          duration: "09:55",
+          watched: false,
+          videoUrl: ""
+        },
+        {
+          id: "l06",
+          title: "Export settings + delivery",
+          description: "Fast, consistent export settings and client-friendly delivery practices.",
+          duration: "07:34",
+          watched: false,
+          videoUrl: ""
+        }
+      ]
+    };
+
+    const els = {
+      year: document.getElementById("y"),
+      courseKicker: document.getElementById("courseKicker"),
+      lessonTitle: document.getElementById("lessonTitle"),
+      lessonDesc: document.getElementById("lessonDesc"),
+      lessonList: document.getElementById("lessonList"),
+      progressPill: document.getElementById("progressPill"),
+      player: document.getElementById("player"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      commentForm: document.getElementById("commentForm"),
+      commentInput: document.getElementById("commentInput"),
+      clearCommentBtn: document.getElementById("clearCommentBtn"),
+      commentList: document.getElementById("commentList"),
+      commentCountPill: document.getElementById("commentCountPill"),
+    };
+
+    els.year.textContent = new Date().getFullYear();
+    els.courseKicker.textContent = "Course · " + course.title;
+
+    let currentIndex = 0;
+
+    function renderLessonList(){
+      els.lessonList.innerHTML = "";
+      course.lessons.forEach((l, i) => {
+        const lesson = document.createElement("div");
+        lesson.className = "lesson" + (i === currentIndex ? " active" : "");
+        lesson.setAttribute("role", "option");
+        lesson.setAttribute("aria-selected", i === currentIndex ? "true" : "false");
+        lesson.addEventListener("click", () => {
+          currentIndex = i;
+          loadLesson();
+        });
+
+        const left = document.createElement("div");
+        left.className = "l-left";
+
+        const check = document.createElement("div");
+        check.className = "check" + (l.watched ? " watched" : "");
+        check.textContent = l.watched ? "✓" : "";
+        check.title = l.watched ? "Watched" : "Not watched";
+
+        const txt = document.createElement("div");
+        txt.className = "ltxt";
+
+        const title = document.createElement("b");
+        title.textContent = l.title;
+
+        const sub = document.createElement("small");
+        sub.textContent = l.watched ? "Watched" : "Not watched";
+
+        txt.appendChild(title);
+        txt.appendChild(sub);
+
+        left.appendChild(check);
+        left.appendChild(txt);
+
+        const dur = document.createElement("div");
+        dur.className = "duration";
+        dur.textContent = l.duration;
+
+        lesson.appendChild(left);
+        lesson.appendChild(dur);
+
+        els.lessonList.appendChild(lesson);
+      });
+
+      const watchedCount = course.lessons.filter(x => x.watched).length;
+      els.progressPill.textContent = watchedCount + " / " + course.lessons.length;
+    }
+
+    function loadLesson(){
+      const l = course.lessons[currentIndex];
+      els.lessonTitle.textContent = l.title;
+      els.lessonDesc.textContent = l.description;
+
+      // Set video source (placeholder)
+      // If you later use Cloudflare Stream, you'll replace this <video> approach with an embed.
+      const src = els.player.querySelector("source");
+      src.src = l.videoUrl || "";
+      els.player.load();
+
+      // Prev/Next button state
+      els.prevBtn.disabled = currentIndex === 0;
+      els.nextBtn.disabled = currentIndex === course.lessons.length - 1;
+
+      renderLessonList();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    els.prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        loadLesson();
+      }
+    });
+
+    els.nextBtn.addEventListener("click", () => {
+      if (currentIndex < course.lessons.length - 1) {
+        currentIndex++;
+        loadLesson();
+      }
+    });
+
+    // Comments (placeholder only: adds to DOM, no backend)
+    function updateCommentCount(){
+      const count = els.commentList.querySelectorAll(".comment").length;
+      els.commentCountPill.textContent = count + (count === 1 ? " comment" : " comments");
+    }
+
+    els.clearCommentBtn.addEventListener("click", () => {
+      els.commentInput.value = "";
+      els.commentInput.focus();
+    });
+
+    els.commentForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = (els.commentInput.value || "").trim();
+      if (!text) return;
+
+      const wrap = document.createElement("div");
+      wrap.className = "comment";
+
+      const av = document.createElement("div");
+      av.className = "avatar";
+      av.textContent = "ST";
+
+      const body = document.createElement("div");
+      body.className = "cbody";
+
+      const name = document.createElement("b");
+      name.textContent = "Student";
+
+      const meta = document.createElement("small");
+      const now = new Date();
+      const h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const ampm = h >= 12 ? "PM" : "AM";
+      const hr = ((h + 11) % 12) + 1;
+      meta.textContent = "Just now · " + hr + ":" + m + " " + ampm;
+
+      const p = document.createElement("p");
+      p.textContent = text;
+
+      body.appendChild(name);
+      body.appendChild(meta);
+      body.appendChild(p);
+
+      wrap.appendChild(av);
+      wrap.appendChild(body);
+
+      els.commentList.prepend(wrap);
+      els.commentInput.value = "";
+      updateCommentCount();
+    });
+
+    // Initial render
+    renderLessonList();
+    loadLesson();
+    updateCommentCount();
+  </script>
+</body>
+</html>
+
+
