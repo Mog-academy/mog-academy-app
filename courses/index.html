@@ -642,7 +642,7 @@
           duration: "04:12",
           watched: true,
           // Replace with: Cloudflare Stream embed flow OR signed/public mp4 link
-          videoUrl: ""
+          videoUrl: "https://mog-academy.com/SnapInsta.to_AQPTU_a_UtB_EyFJi1Cjg5DGFhwznsxLWO9xmCZJ63aqbj93EEPyR3_yuMyrJOyeOS0GSfxKVgRYlqUq6HTurQrwlrci4jv-Z8eri2I.mp4"
         },
         {
           id: "l02",
@@ -765,9 +765,11 @@
 
       // Set video source (placeholder)
       // If you later use Cloudflare Stream, you'll replace this <video> approach with an embed.
-      const src = els.player.querySelector("source");
-      src.src = l.videoUrl || "";
-      els.player.load();
+const src = els.player.querySelector("source");
+if (l.videoUrl && l.videoUrl.trim()) {
+  src.src = l.videoUrl.trim();
+  els.player.load();
+}
 
       // Prev/Next button state
       els.prevBtn.disabled = currentIndex === 0;
