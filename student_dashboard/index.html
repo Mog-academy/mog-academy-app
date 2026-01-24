@@ -313,7 +313,15 @@
          ">
 
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div style="font-size:18px;font-weight:600;letter-spacing:0.2px;">Mo.G Academy</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <!-- ✅ LOGO INSIDE CERTIFICATE (so it appears in PDF) -->
+          <img id="certLogo"
+               src="logo.png"
+               alt="Mo.G Academy logo"
+               crossorigin="anonymous"
+               style="width:46px;height:46px;border-radius:12px;border:1px solid rgba(17,17,17,0.10);background:#fff;object-fit:contain;padding:6px;" />
+          <div style="font-size:18px;font-weight:600;letter-spacing:0.2px;">Mo.G Academy</div>
+        </div>
         <div style="font-size:12px;color:#7a7a7a;">Course Completion Certificate</div>
       </div>
 
@@ -368,7 +376,11 @@
         </div>
 
         <div style="text-align:right;">
-          <img id="certSign" src="mysign.png" alt="Instructor signature"
+          <!-- ✅ Signature with CORS + wait before capture -->
+          <img id="certSign"
+               src="mysign.png"
+               alt="Instructor signature"
+               crossorigin="anonymous"
                style="height:80px;object-fit:contain;display:block;margin-left:auto;" />
           <div style="margin-top:8px;font-size:12px;color:#7a7a7a;">Signature</div>
         </div>
@@ -386,12 +398,15 @@
     document.getElementById("y").textContent = new Date().getFullYear();
 
     // =========================
-    // EDIT THESE
+    // CONFIG
     // =========================
     const SUPABASE_URL = "https://yijcnkcaibspxbpvmzhd.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpamNua2NhaWJzcHhicHZtemhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjQ0MDksImV4cCI6MjA4NDUwMDQwOX0.NqsgzQ8z9UKahVdbjXp9-yA2Y5F3yFveaF9mLzAXLl4";
-    const USER_TABLE = "profiles"; // change if your table is named differently
+    const SUPABASE_ANON_KEY = "<<< KEEP YOUR CURRENT KEY HERE >>>";
+
+    // ✅ Unified name source (one truth)
+    const USER_TABLE = "profiles"; // you confirmed this
     const CERT_TABLE = "course_certificates";
+
     const COURSE_ID = "render-to-revenue-foundations";
     const COURSE_TITLE = "Render to Revenue — Foundations";
 
@@ -430,18 +445,41 @@
       }
     }
 
+    // ✅ Wait for images reliably (not just "complete")
+    async function waitForImage(imgEl) {
+      await new Promise((resolve) => {
+        if (!imgEl) return resolve();
+
+        // Ensure CORS attribute is set before loading
+        if (!imgEl.getAttribute("crossorigin")) imgEl.setAttribute("crossorigin", "anonymous");
+
+        const done = () => resolve();
+
+        // Must have naturalWidth > 0 (loaded OK)
+        if (imgEl.complete && imgEl.naturalWidth > 0) return done();
+
+        imgEl.onload = done;
+        imgEl.onerror = done;
+
+        // Force reload if it was cached as broken
+        const src = imgEl.getAttribute("src");
+        if (src && !src.includes("?cb=")) {
+          imgEl.src = src + "?cb=" + Date.now();
+        }
+      });
+    }
+
     async function main(){
       debugEl.textContent = "";
       log("Domain: " + location.origin);
       setStatus("Checking certificate eligibility…");
 
-      // If CDN blocked, window.supabase will be undefined
       if (!window.supabase || !window.supabase.createClient) {
         bootFail("Supabase SDK did not load (CDN blocked). Try disabling ad-block or use another CDN.");
         return;
       }
 
-      if (!SUPABASE_URL.includes("supabase.co") || SUPABASE_ANON_KEY === "YOUR_ANON_KEY") {
+      if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("<<<")) {
         bootFail("Supabase keys are not set in this page.");
         return;
       }
@@ -449,12 +487,10 @@
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       log("Supabase SDK: loaded");
 
-      // 1) Check session fast
       const sessionRes = await withTimeout(supabase.auth.getSession(), 5000, "getSession");
       const session = sessionRes?.data?.session || null;
       log("Session exists: " + (session ? "yes" : "no"));
 
-      // 2) Get user
       const userRes = await withTimeout(supabase.auth.getUser(), 5000, "getUser");
       const user = userRes?.data?.user || null;
 
@@ -470,7 +506,7 @@
 
       whoamiEl.innerHTML = 'Signed in as: <b>' + (user.email || "unknown") + '</b>';
 
-      // 3) Profile (optional)
+      // ✅ Profile: ONLY source of name (full_name)
       const profileRes = await withTimeout(
         supabase.from(USER_TABLE).select("full_name,email").eq("id", user.id).maybeSingle(),
         7000,
@@ -483,14 +519,12 @@
       log("Profile found: " + (profile ? "yes" : "no"));
       if (profileErr) log("Profile error: " + profileErr.message);
 
-      const studentName = profile?.full_name || "—";
-      const studentEmail = profile?.email || user.email || "—";
-
-      // 4) Certificate row
+      //  Certificate row (no student_name needed here)
+      //  NOTE: if your table still has student_name, we include it only as TEMP fallback.
       const certRes = await withTimeout(
         supabase
           .from(CERT_TABLE)
-          .select("company,completion_date,hours,instructor_name,eligible,user_id,course_id")
+          .select("company,completion_date,hours,instructor_name,eligible,user_id,course_id,student_name")
           .eq("user_id", user.id)
           .eq("course_id", COURSE_ID)
           .maybeSingle(),
@@ -515,12 +549,15 @@
         return;
       }
 
-      // Button visible now
       setStatus("");
       btn.style.display = "inline-flex";
       log("SUCCESS: Button shown.");
 
-      // Prepare combined data for PDF generation
+      // ✅ Unified student name: profile.full_name is the truth.
+      // TEMP fallback (only if you still have cert.student_name while migrating)
+      const studentName = (profile?.full_name && profile.full_name.trim()) ? profile.full_name.trim() : (cert?.student_name || "—");
+      const studentEmail = profile?.email || user.email || "—";
+
       const combinedData = {
         course_id: COURSE_ID,
         course_title: COURSE_TITLE,
@@ -529,26 +566,17 @@
         company: cert.company || "—",
         completion_date: cert.completion_date,
         hours: cert.hours,
-        instructor_name: cert.instructor_name
+        instructor_name: cert.instructor_name || ""
       };
 
       function fillCertificateTemplate(row) {
-        document.getElementById("certStudentName").textContent = row.student_name || "";
-        document.getElementById("certEmail").textContent = row.email || "";
+        document.getElementById("certStudentName").textContent = row.student_name || "—";
+        document.getElementById("certEmail").textContent = row.email || "—";
         document.getElementById("certCompany").textContent = row.company || "—";
         document.getElementById("certDate").textContent = fmtDate(row.completion_date);
         document.getElementById("certHours").textContent = (row.hours ?? "") + " hours";
-        document.getElementById("certInstructor").textContent = row.instructor_name || "";
-        document.getElementById("certCourseTitle").textContent = row.course_title || "";
-      }
-
-      async function waitForImage(imgEl) {
-        await new Promise((resolve) => {
-          if (!imgEl) return resolve();
-          if (imgEl.complete) return resolve();
-          imgEl.onload = resolve;
-          imgEl.onerror = resolve;
-        });
+        document.getElementById("certInstructor").textContent = row.instructor_name || "—";
+        document.getElementById("certCourseTitle").textContent = row.course_title || "—";
       }
 
       btn.addEventListener("click", async () => {
@@ -558,11 +586,15 @@
 
         try{
           fillCertificateTemplate(combinedData);
+
+          // ✅ Wait for BOTH signature + logo before capture
+          await waitForImage(document.getElementById("certLogo"));
           await waitForImage(document.getElementById("certSign"));
 
           const canvas = await html2canvas(document.getElementById("certificate"), {
             scale: 2,
             useCORS: true,
+            allowTaint: false,
             backgroundColor: "#ffffff"
           });
 
@@ -591,7 +623,6 @@
       });
     }
 
-    // run
     main().catch(err => {
       bootFail("JS error: " + err.message);
     });
