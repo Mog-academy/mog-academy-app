@@ -13,6 +13,7 @@
       --line:#e9e9e9;
       --ok:#1f8f4a;
       --bad:#b42318;
+      --soft:#fafafa;
     }
 
     *{box-sizing:border-box}
@@ -99,7 +100,7 @@
       align-items:center;
       justify-content:center;
       text-align:center;
-      gap:16px;
+      gap:14px;
       padding: 10px 6px 6px;
     }
 
@@ -127,7 +128,7 @@
       justify-content:center;
       gap:14px;
       flex-wrap:wrap;
-      margin-top: 6px;
+      margin-top: 4px;
     }
 
     .follow-text{
@@ -172,11 +173,11 @@
     }
 
     .cert-wrap{
-      margin-top: 6px;
+      margin-top: 10px;
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:12px;
+      gap:10px;
       flex-wrap:wrap;
     }
 
@@ -207,37 +208,29 @@
       min-height: 18px;
     }
 
+    .mini{
+      width:100%;
+      text-align:center;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .mini b{ color: var(--black); font-weight:600; }
+
     .debug{
       width:100%;
-      max-width: 760px;
+      max-width: 780px;
       margin-top: 10px;
       text-align:left;
       font-size:12px;
       line-height:1.5;
       color:#6f6f6f;
-      background:#fafafa;
+      background: var(--soft);
       border:1px solid var(--line);
       border-radius: 16px;
-      padding: 12px 12px;
+      padding: 12px;
       white-space:pre-wrap;
       overflow:auto;
-      display:none; /* set to block to show */
     }
-    .debug strong{ color: var(--black); }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid rgba(17,17,17,0.12);
-      background:#fff;
-      color: var(--black);
-    }
-    .pill.ok{ border-color: rgba(31,143,74,0.35); background: rgba(31,143,74,0.10); }
-    .pill.bad{ border-color: rgba(180,35,24,0.35); background: rgba(180,35,24,0.10); }
-    .debug-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
 
     .footer{
       padding: 14px 20px 18px;
@@ -297,19 +290,19 @@
             <div class="follow-text">Follow us on social media to stay updated:</div>
 
             <div class="social-row">
-              <a class="social-icon" href="https://www.linkedin.com/company/mog-academy/" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
+              <a class="social-icon" href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
                 <img src="linkedin.png" alt="" />
               </a>
-
-              <a class="social-icon" href="https://www.instagram.com/mo.g_academy/" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
+              <a class="social-icon" href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
                 <img src="instagram.png" alt="" />
               </a>
-
-              <a class="social-icon" href="https://www.youtube.com/@mo.gacademy" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
+              <a class="social-icon" href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
                 <img src="youtube.png" alt="" />
               </a>
             </div>
           </div>
+
+          <div class="mini" id="whoami">Signed in as: <b>checking…</b></div>
 
           <div class="cert-wrap">
             <button id="downloadCertBtn" class="btn" type="button" style="display:none;">
@@ -318,8 +311,7 @@
             <div id="certStatus" class="status"></div>
           </div>
 
-          <!-- Debug (optional). To show it, change display:none to display:block in CSS above. -->
-          <div id="debug" class="debug"></div>
+          <div id="debug" class="debug">Loading…</div>
         </div>
       </div>
     </div>
@@ -330,7 +322,7 @@
     </div>
   </div>
 
-  <!-- Hidden certificate render target (used to generate a PDF) -->
+  <!-- Hidden certificate render target -->
   <div id="certWrap" style="position:fixed;left:-99999px;top:0;width:1200px;">
     <div id="certificate"
          style="
@@ -408,50 +400,44 @@
     </div>
   </div>
 
-  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
-    // =========================
-    // PAGE + CONFIG
-    // =========================
     document.getElementById("y").textContent = new Date().getFullYear();
 
-    // IMPORTANT:
-    // 1) Replace SUPABASE_URL + SUPABASE_ANON_KEY
-    // 2) Replace USER_TABLE if your table name isn't "users"
-    // 3) Replace COURSE_ID to match your certificate row
+    // =========================
+    // EDIT THESE 4 LINES
+    // =========================
     const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
     const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
-
-    const USER_TABLE = "users";              // your login/profile table (screenshot)
-    const CERT_TABLE = "course_certificates";// your certificates table
+    const USER_TABLE = "users"; // change if your table name differs (common: profiles)
     const COURSE_ID = "render-to-revenue-foundations";
+
+    const CERT_TABLE = "course_certificates";
     const COURSE_TITLE = "Render to Revenue — Foundations";
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const btn = document.getElementById("downloadCertBtn");
     const statusEl = document.getElementById("certStatus");
+    const whoamiEl = document.getElementById("whoami");
     const debugEl = document.getElementById("debug");
 
     let combinedData = null;
 
-    function showStatus(msg){ statusEl.textContent = msg || ""; }
-
-    function debugLine(s){
-      // Debug panel is hidden by default. To show, set .debug {display:block}
+    function log(s){
       debugEl.textContent += s + "\n";
     }
-
+    function setStatus(msg){
+      statusEl.textContent = msg || "";
+    }
     function fmtDate(d) {
       if (!d) return "";
       const dt = new Date(d + "T00:00:00");
       return dt.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
     }
-
     function safeFileName(s) {
       return String(s || "student").replace(/[^\w\-]+/g, "_").slice(0, 80);
     }
@@ -461,40 +447,40 @@
       combinedData = null;
       debugEl.textContent = "";
 
-      showStatus("Checking certificate eligibility…");
-      debugLine("Domain: " + location.origin);
+      setStatus("Checking certificate eligibility…");
+      log("Domain: " + location.origin);
 
-      // 1) Check auth session on THIS domain
       const { data: userData, error: userErr } = await supabase.auth.getUser();
-      debugLine("auth.getUser error: " + (userErr ? userErr.message : "none"));
+      log("auth.getUser error: " + (userErr ? userErr.message : "none"));
 
       const user = userData?.user || null;
-      debugLine("auth user id: " + (user?.id || "null"));
-      debugLine("auth user email: " + (user?.email || "null"));
+      log("auth user id: " + (user?.id || "null"));
+      log("auth user email: " + (user?.email || "null"));
 
       if (!user) {
-        showStatus("Not logged in on this page.");
-        debugLine("STOP: No user session found. (This usually means you logged in on another subdomain.)");
+        whoamiEl.innerHTML = 'Signed in as: <b>not logged in on this page</b>';
+        setStatus("Not logged in on this page.");
+        log("STOP: No session found. If you logged in on another subdomain, this page won't see it.");
         return;
       }
 
-      // 2) Get profile row from your table (id MUST match auth user id)
+      whoamiEl.innerHTML = 'Signed in as: <b>' + (user.email || "unknown") + '</b>';
+
+      // profile fetch (optional, but used for name/email)
       const { data: profile, error: profileErr } = await supabase
         .from(USER_TABLE)
         .select("full_name, email")
         .eq("id", user.id)
         .maybeSingle();
 
-      debugLine("profile query error: " + (profileErr ? profileErr.message : "none"));
-      debugLine("profile row found: " + (profile ? "yes" : "no"));
-      debugLine("profile full_name: " + (profile?.full_name || "null"));
-      debugLine("profile email: " + (profile?.email || "null"));
+      log("profile query error: " + (profileErr ? profileErr.message : "none"));
+      log("profile row found: " + (profile ? "yes" : "no"));
+      log("profile full_name: " + (profile?.full_name || "null"));
+      log("profile email: " + (profile?.email || "null"));
 
-      // Don't block if profile is missing; fallback to auth.email
       const studentName = profile?.full_name || "—";
       const studentEmail = profile?.email || user.email || "—";
 
-      // 3) Get certificate row (must match user.id + course_id)
       const { data: cert, error: certErr } = await supabase
         .from(CERT_TABLE)
         .select("company, completion_date, hours, instructor_name, eligible, user_id, course_id")
@@ -502,26 +488,22 @@
         .eq("course_id", COURSE_ID)
         .maybeSingle();
 
-      debugLine("cert query error: " + (certErr ? certErr.message : "none"));
-      debugLine("cert row found: " + (cert ? "yes" : "no"));
-      debugLine("cert eligible: " + (cert?.eligible ?? "null"));
-      debugLine("cert user_id: " + (cert?.user_id || "null"));
-      debugLine("cert course_id: " + (cert?.course_id || "null"));
+      log("cert query error: " + (certErr ? certErr.message : "none"));
+      log("cert row found: " + (cert ? "yes" : "no"));
+      log("cert eligible: " + (cert?.eligible ?? "null"));
+      log("cert user_id: " + (cert?.user_id || "null"));
+      log("cert course_id: " + (cert?.course_id || "null"));
 
       if (certErr) {
-        showStatus("Could not load certificate data.");
+        setStatus("Could not load certificate data.");
         return;
       }
-
       if (!cert) {
-        showStatus("Certificate not available yet.");
-        debugLine("STOP: No cert row for this user+course. Insert it and set eligible=true.");
+        setStatus("No certificate row found for your user + this course.");
         return;
       }
-
       if (!cert.eligible) {
-        showStatus("Certificate not available yet.");
-        debugLine("STOP: Cert row found but eligible=false.");
+        setStatus("Certificate not available yet (eligible=false).");
         return;
       }
 
@@ -536,9 +518,9 @@
         instructor_name: cert.instructor_name
       };
 
-      showStatus("");
+      setStatus("");
       btn.style.display = "inline-flex";
-      debugLine("SUCCESS: Button shown.");
+      log("SUCCESS: Button shown.");
     }
 
     function fillCertificateTemplate(row) {
@@ -569,21 +551,17 @@
 
       try {
         fillCertificateTemplate(combinedData);
-
-        // Ensure signature image is loaded before rendering
         await waitForImage(document.getElementById("certSign"));
 
-        const certEl = document.getElementById("certificate");
-
-        const canvas = await html2canvas(certEl, {
+        const canvas = await html2canvas(document.getElementById("certificate"), {
           scale: 2,
           useCORS: true,
           backgroundColor: "#ffffff"
         });
 
         const imgData = canvas.toDataURL("image/png");
-
         const { jsPDF } = window.jspdf;
+
         const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
 
         const pageWidth = pdf.internal.pageSize.getWidth();
@@ -599,7 +577,7 @@
         pdf.save(file);
       } catch (e) {
         console.error(e);
-        showStatus("Could not generate the certificate. Open console for details.");
+        setStatus("Could not generate the certificate. Open console for details.");
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
@@ -608,7 +586,6 @@
 
     btn.addEventListener("click", generateCertificatePDF);
 
-    // Run on load
     loadEligibility();
   </script>
 </body>
