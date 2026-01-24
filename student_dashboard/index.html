@@ -314,7 +314,6 @@
 
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div style="display:flex;align-items:center;gap:12px;">
-          <!-- ✅ LOGO INSIDE CERTIFICATE (so it appears in PDF) -->
           <img id="certLogo"
                src="logo.png"
                alt="Mo.G Academy logo"
@@ -334,8 +333,8 @@
           This certifies that
         </div>
 
-        <div id="certStudentName" style="margin-top:14px;font-size:38px;font-weight:700;">
-          Student Name
+        <div id="certFullName" style="margin-top:14px;font-size:38px;font-weight:700;">
+          Full Name
         </div>
 
         <div style="margin-top:18px;font-size:14px;color:#7a7a7a;">
@@ -376,7 +375,6 @@
         </div>
 
         <div style="text-align:right;">
-          <!-- ✅ Signature with CORS + wait before capture -->
           <img id="certSign"
                src="mysign.png"
                alt="Instructor signature"
@@ -403,8 +401,7 @@
     const SUPABASE_URL = "https://yijcnkcaibspxbpvmzhd.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpamNua2NhaWJzcHhicHZtemhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjQ0MDksImV4cCI6MjA4NDUwMDQwOX0.NqsgzQ8z9UKahVdbjXp9-yA2Y5F3yFveaF9mLzAXLl4";
 
-    // ✅ Unified name source (one truth)
-    const USER_TABLE = "profiles"; // you confirmed this
+    const USER_TABLE = "profiles";     // unified full_name lives here
     const CERT_TABLE = "course_certificates";
 
     const COURSE_ID = "D5 User Certification Training Program";
@@ -423,6 +420,7 @@
       const dt = new Date(d + "T00:00:00");
       return dt.toLocaleDateString(undefined, { year:"numeric", month:"long", day:"numeric" });
     }
+
     function safeFileName(s) {
       return String(s || "student").replace(/[^\w\-]+/g, "_").slice(0, 80);
     }
@@ -445,27 +443,20 @@
       }
     }
 
-    // ✅ Wait for images reliably (not just "complete")
     async function waitForImage(imgEl) {
       await new Promise((resolve) => {
         if (!imgEl) return resolve();
 
-        // Ensure CORS attribute is set before loading
         if (!imgEl.getAttribute("crossorigin")) imgEl.setAttribute("crossorigin", "anonymous");
 
         const done = () => resolve();
-
-        // Must have naturalWidth > 0 (loaded OK)
         if (imgEl.complete && imgEl.naturalWidth > 0) return done();
 
         imgEl.onload = done;
         imgEl.onerror = done;
 
-        // Force reload if it was cached as broken
         const src = imgEl.getAttribute("src");
-        if (src && !src.includes("?cb=")) {
-          imgEl.src = src + "?cb=" + Date.now();
-        }
+        if (src && !src.includes("?cb=")) imgEl.src = src + "?cb=" + Date.now();
       });
     }
 
@@ -479,7 +470,7 @@
         return;
       }
 
-      if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("<<<")) {
+      if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY) {
         bootFail("Supabase keys are not set in this page.");
         return;
       }
@@ -506,7 +497,7 @@
 
       whoamiEl.innerHTML = 'Signed in as: <b>' + (user.email || "unknown") + '</b>';
 
-      // ✅ Profile: ONLY source of name (full_name)
+      // ✅ Profile is the ONLY name source
       const profileRes = await withTimeout(
         supabase.from(USER_TABLE).select("full_name,email").eq("id", user.id).maybeSingle(),
         7000,
@@ -519,12 +510,19 @@
       log("Profile found: " + (profile ? "yes" : "no"));
       if (profileErr) log("Profile error: " + profileErr.message);
 
-      //  Certificate row (no student_name needed here)
-      //  NOTE: if your table still has student_name, we include it only as TEMP fallback.
+      if (!profile || !profile.full_name || !profile.full_name.trim()) {
+        setStatus("Your profile is missing full_name. Please complete your registration profile.");
+        return;
+      }
+
+      const fullName = profile.full_name.trim();
+      const email = profile?.email || user.email || "—";
+
+      // ✅ Certificate row: NO student_name column
       const certRes = await withTimeout(
         supabase
           .from(CERT_TABLE)
-          .select("company,completion_date,hours,instructor_name,eligible,user_id,course_id,student_name")
+          .select("company,completion_date,hours,instructor_name,eligible,user_id,course_id")
           .eq("user_id", user.id)
           .eq("course_id", COURSE_ID)
           .maybeSingle(),
@@ -553,24 +551,19 @@
       btn.style.display = "inline-flex";
       log("SUCCESS: Button shown.");
 
-      // ✅ Unified student name: profile.full_name is the truth.
-      // TEMP fallback (only if you still have cert.student_name while migrating)
-      const studentName = (profile?.full_name && profile.full_name.trim()) ? profile.full_name.trim() : (cert?.student_name || "—");
-      const studentEmail = profile?.email || user.email || "—";
-
       const combinedData = {
         course_id: COURSE_ID,
         course_title: COURSE_TITLE,
-        student_name: studentName,
-        email: studentEmail,
+        full_name: fullName,
+        email: email,
         company: cert.company || "—",
         completion_date: cert.completion_date,
         hours: cert.hours,
-        instructor_name: cert.instructor_name || ""
+        instructor_name: cert.instructor_name || "—"
       };
 
       function fillCertificateTemplate(row) {
-        document.getElementById("certStudentName").textContent = row.student_name || "—";
+        document.getElementById("certFullName").textContent = row.full_name || "—";
         document.getElementById("certEmail").textContent = row.email || "—";
         document.getElementById("certCompany").textContent = row.company || "—";
         document.getElementById("certDate").textContent = fmtDate(row.completion_date);
@@ -587,7 +580,6 @@
         try{
           fillCertificateTemplate(combinedData);
 
-          // ✅ Wait for BOTH signature + logo before capture
           await waitForImage(document.getElementById("certLogo"));
           await waitForImage(document.getElementById("certSign"));
 
@@ -611,7 +603,7 @@
 
           pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
 
-          const file = `MoG_Certificate_${combinedData.course_id}_${safeFileName(combinedData.student_name)}.pdf`;
+          const file = `MoG_Certificate_${safeFileName(combinedData.course_id)}_${safeFileName(combinedData.full_name)}.pdf`;
           pdf.save(file);
         } catch(e){
           log("PDF error: " + e.message);
