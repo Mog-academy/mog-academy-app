@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mo.G Academy | Login</title>
+    <style>
+      :root{
+        --orange:#ff7a00; --black:#111; --bg:#fff; --radius:18px;
+        --muted:#7a7a7a; --good:#1f8b3a; --bad:#c62828;
+      }
+      body{
+        margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+        background:var(--bg); color:var(--black); min-height:100vh;
+        display:grid; place-items:center; padding:24px;
+      }
+      .card{
+        width:100%; max-width:460px; border:2px solid var(--orange);
+        border-radius:var(--radius); padding:22px; box-sizing:border-box;
+      }
+      .banner{
+        border:2px solid var(--orange); border-radius:var(--radius);
+        padding:12px 14px; margin-bottom:14px;
+      }
+      .brandRow{ display:flex; align-items:center; gap:10px; }
+      .brandRow a{ display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
+      .brandRow img{ width:34px; height:34px; object-fit:contain; }
+      h1{ margin:0 0 2px 0; font-size:22px; }
+      p{ margin:0; font-size:14px; line-height:1.5; }
+
+      label{ display:block; font-size:13px; margin:12px 0 6px 0; }
+      .inputWrap{ position:relative; }
+      input{
+        width:100%; border:2px solid var(--orange); border-radius:14px;
+        padding:10px 44px 10px 12px; font-size:14px; box-sizing:border-box; outline:none;
+      }
+      input.noIcon{ padding-right:12px; }
+
+      .togglePass{
+        position:absolute; right:10px; top:50%; transform:translateY(-50%);
+        width:26px; height:26px; border:none; background:transparent; cursor:pointer;
+        display:flex; align-items:center; justify-content:center; padding:0;
+      }
+      .togglePass img{ width:20px; height:20px; opacity:0.75; }
+
+      .btn{
+        border:2px solid var(--orange); background:var(--orange); color:#fff;
+        border-radius:14px; padding:10px 12px; cursor:pointer;
+        font-weight:700; width:100%;
+      }
+      .btn.secondary{ background:transparent; color:var(--black); }
+      .btn:disabled{ opacity:.6; cursor:not-allowed; }
+      .row{ display:grid; gap:10px; margin-top:16px; }
+
+      .msg{
+        margin-top:14px; border:2px solid var(--orange); border-radius:14px;
+        padding:10px 12px; font-size:13px; white-space:pre-wrap;
+      }
+
+      .hint{
+        margin-top:6px;
+        font-size:12px;
+        color:var(--muted);
+        line-height:1.35;
+        white-space:pre-line;
+      }
+      .hint.good{ color:var(--good); }
+      .hint.bad{ color:var(--bad); }
+
+      .rules{ margin-top:6px; font-size:12px; line-height:1.35; white-space:pre-line; }
+      .rule{ display:block; color:var(--muted); }
+      .rule.req.bad{ color:var(--bad); }
+      .rule.req.good{ color:var(--good); }
+      .rule.opt{ color:var(--muted); }
+      .rule.opt.good{ color:var(--good); }
+
+      .link{ margin-top:14px; font-size:13px; text-align:center; }
+      .link button{
+        border:none; background:none; color:var(--black); text-decoration:underline;
+        cursor:pointer; font-weight:700; padding:0;
+      }
+
+      .checks{
+        margin-top:14px; border:2px solid var(--orange);
+        border-radius:14px; padding:12px; font-size:13px;
+      }
+      .checkrow{ display:flex; gap:10px; align-items:flex-start; margin:8px 0; }
+      .checkrow input[type="checkbox"]{ width:18px; height:18px; margin-top:2px; }
+
+      a{ color:var(--black); }
+      .small{ margin-top:10px; font-size:12px; opacity:.8; text-align:center; }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <div class="banner">
+        <div class="brandRow">
+          <a href="https://mog-academy.com" aria-label="Go to Mo.G Academy homepage">
+            <img src="/login/images/logo.png" alt="Mo.G Academy Logo" />
+            <div>
+              <h1>Mo.G Academy</h1>
+              <p id="subtitle">Student Login</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- LOGIN VIEW -->
+      <div id="loginView">
+        <form id="loginForm">
+          <label for="loginEmail">Email</label>
+          <div class="inputWrap">
+            <input id="loginEmail" class="noIcon" type="email" autocomplete="email" required />
+          </div>
+
+          <label for="loginPassword">Password</label>
+          <div class="inputWrap">
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+            <button class="togglePass" id="toggleLoginPass" type="button" aria-label="Show password">
+              <img id="toggleLoginPassIcon" src="/login/images/showpass.svg" alt="" />
+            </button>
+          </div>
+
+          <div class="row">
+            <button id="loginBtn" class="btn" type="submit">Login</button>
+          </div>
+
+          <div id="loginMsg" class="msg" style="display:none;"></div>
+
+          <div class="link">
+            <button id="openForgot" type="button">Forgot password?</button>
+          </div>
+
+          <div class="link">
+            New user? <button id="openRegister" type="button">Register here</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- REGISTER VIEW -->
+      <div id="registerView" style="display:none;">
+        <form id="registerForm">
+          <label for="fullName">Full name</label>
+          <div class="inputWrap">
+            <input id="fullName" class="noIcon" type="text" autocomplete="name" required />
+          </div>
+
+          <label for="username">Username</label>
+          <div class="inputWrap">
+            <input id="username" class="noIcon" type="text" autocomplete="username" required />
+          </div>
+          <div id="usernameHint" class="hint" style="display:none;"></div>
+
+          <label for="regEmail">Email</label>
+          <div class="inputWrap">
+            <input id="regEmail" class="noIcon" type="email" autocomplete="email" required />
+          </div>
+
+          <label for="regEmail2">Confirm email</label>
+          <div class="inputWrap">
+            <input id="regEmail2" class="noIcon" type="email" autocomplete="email" required />
+          </div>
+          <div id="emailHint" class="hint" style="display:none;"></div>
+
+          <label for="regPassword">Password</label>
+          <div class="inputWrap">
+            <input id="regPassword" type="password" autocomplete="new-password" required />
+            <!-- One toggle controls BOTH password fields -->
+            <button class="togglePass" id="toggleRegPassBoth" type="button" aria-label="Show password">
+              <img id="toggleRegPassBothIcon" src="/login/images/showpass.svg" alt="" />
+            </button>
+          </div>
+          <div id="passRules" class="rules" style="display:none;"></div>
+
+          <label for="regPassword2">Confirm password</label>
+          <div class="inputWrap">
+            <input id="regPassword2" class="noIcon" type="password" autocomplete="new-password" required />
+          </div>
+          <div id="pass2Hint" class="hint" style="display:none;"></div>
+
+          <div class="checks">
+            <div class="checkrow">
+              <input id="agree" type="checkbox" />
+              <div>
+                I agree to the
+                <a href="/terms" target="_blank" rel="noopener">Terms & Conditions</a>
+                and
+                <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+                <strong>(required)</strong>
+              </div>
+            </div>
+
+            <div class="checkrow">
+              <input id="newsletter" type="checkbox" />
+              <div>I want to receive the newsletter and stay up to date. (optional)</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <button id="registerBtn" class="btn" type="submit">Create account</button>
+            <button id="backToLogin" class="btn secondary" type="button">Back to login</button>
+          </div>
+
+          <div id="registerMsg" class="msg" style="display:none;"></div>
+
+          <div class="small">
+            Email verification is required. You’ll receive a verification email after signup.
+          </div>
+        </form>
+      </div>
+
+      <!-- FORGOT PASSWORD VIEW -->
+      <div id="forgotView" style="display:none;">
+        <form id="forgotForm">
+          <label for="forgotEmail">Enter your email</label>
+          <div class="inputWrap">
+            <input id="forgotEmail" class="noIcon" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="row">
+            <button id="forgotBtn" class="btn" type="submit">Send reset link</button>
+            <button id="backToLogin2" class="btn secondary" type="button">Back to login</button>
+          </div>
+
+          <div id="forgotMsg" class="msg" style="display:none;"></div>
+
+          <div class="small">
+            You’ll receive a secure link to set a new password.
+          </div>
+        </form>
+      </div>
+
+      <!-- RESET PASSWORD VIEW (shown automatically when user clicks reset link) -->
+      <div id="resetView" style="display:none;">
+        <form id="resetForm">
+          <label for="newPass">New password</label>
+          <div class="inputWrap">
+            <input id="newPass" type="password" autocomplete="new-password" required />
+            <button class="togglePass" id="toggleResetPassBoth" type="button" aria-label="Show password">
+              <img id="toggleResetPassBothIcon" src="/login/images/showpass.svg" alt="" />
+            </button>
+          </div>
+          <div id="resetRules" class="rules" style="display:none;"></div>
+
+          <label for="newPass2">Confirm new password</label>
+          <div class="inputWrap">
+            <input id="newPass2" class="noIcon" type="password" autocomplete="new-password" required />
+          </div>
+          <div id="resetMatchHint" class="hint" style="display:none;"></div>
+
+          <div class="row">
+            <button id="resetBtn" class="btn" type="submit">Update password</button>
+            <button id="backToLogin3" class="btn secondary" type="button">Back to login</button>
+          </div>
+
+          <div id="resetMsg" class="msg" style="display:none;"></div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ===== View switching MUST work even if Supabase fails to load =====
+      const subtitle = document.getElementById("subtitle");
+
+      const loginView = document.getElementById("loginView");
+      const registerView = document.getElementById("registerView");
+      const forgotView = document.getElementById("forgotView");
+      const resetView = document.getElementById("resetView");
+
+      const openRegister = document.getElementById("openRegister");
+      const backToLogin = document.getElementById("backToLogin");
+      const openForgot = document.getElementById("openForgot");
+      const backToLogin2 = document.getElementById("backToLogin2");
+      const backToLogin3 = document.getElementById("backToLogin3");
+
+      const loginMsg = document.getElementById("loginMsg");
+      const registerMsg = document.getElementById("registerMsg");
+      const forgotMsg = document.getElementById("forgotMsg");
+      const resetMsg = document.getElementById("resetMsg");
+
+      function show(el){ el.style.display = "block"; }
+      function hide(el){ el.style.display = "none"; }
+
+      function showMsg(box, text){
+        box.textContent = text;
+        box.style.display = "block";
+      }
+      function hideMsg(box){
+        box.textContent = "";
+        box.style.display = "none";
+      }
+
+      function showOnly(view){
+        hide(loginView); hide(registerView); hide(forgotView); hide(resetView);
+        show(view);
+      }
+
+      function showLogin(){
+        subtitle.textContent = "Student Login";
+        showOnly(loginView);
+        hideMsg(registerMsg); hideMsg(forgotMsg); hideMsg(resetMsg);
+      }
+      function showRegister(){
+        subtitle.textContent = "Create your student account";
+        showOnly(registerView);
+        hideMsg(loginMsg); hideMsg(forgotMsg); hideMsg(resetMsg);
+      }
+      function showForgot(){
+        subtitle.textContent = "Reset your password";
+        showOnly(forgotView);
+        hideMsg(loginMsg); hideMsg(registerMsg); hideMsg(resetMsg);
+      }
+      function showReset(){
+        subtitle.textContent = "Set a new password";
+        showOnly(resetView);
+        hideMsg(loginMsg); hideMsg(registerMsg); hideMsg(forgotMsg);
+      }
+
+      openRegister.addEventListener("click", () => showRegister());
+      backToLogin.addEventListener("click", () => showLogin());
+      openForgot.addEventListener("click", () => showForgot());
+      backToLogin2.addEventListener("click", () => showLogin());
+      backToLogin3.addEventListener("click", () => showLogin());
+
+      // ===== Supabase loader with fallback =====
+      function loadScript(src){
+        return new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      async function initSupabase(){
+        try { await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"); }
+        catch {
+          try { await loadScript("https://unpkg.com/@supabase/supabase-js@2"); }
+          catch {
+            showMsg(loginMsg, "Supabase library failed to load. Please refresh or try again later.");
+            return null;
+          }
+        }
+
+        if (!window.supabase) {
+          showMsg(loginMsg, "Supabase library did not initialize correctly. Please refresh.");
+          return null;
+        }
+
+        const SUPABASE_URL = "https://yijcnkcaibspxbpvmzhd.supabase.co";
+        const SUPABASE_ANON_KEY =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpamNua2NhaWJzcHhicHZtemhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjQ0MDksImV4cCI6MjA4NDUwMDQwOX0.NqsgzQ8z9UKahVdbjXp9-yA2Y5F3yFveaF9mLzAXLl4";
+
+        return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+
+      // ===== Helpers =====
+      function debounce(fn, ms){
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn(...args), ms);
+        };
+      }
+      function normalizeUsername(u){ return (u || "").trim(); }
+      function hasUppercase(s){ return /[A-Z]/.test(s); }
+      function hasSpecial(s){ return /[^A-Za-z0-9]/.test(s); }
+
+      function setLoading(btn, isLoading, label){
+        btn.disabled = isLoading;
+        btn.textContent = isLoading ? "Please wait..." : label;
+      }
+
+      function renderPassRules(container, pass){
+        const lenOk = pass.length >= 8;          // required
+        const upperOk = hasUppercase(pass);      // optional
+        const specialOk = hasSpecial(pass);      // optional
+
+        container.style.display = "block";
+        container.innerHTML = [
+          `<span class="rule req ${lenOk ? "good" : "bad"}">${lenOk ? "✓" : "✗"} At least 8 characters (required)</span>`,
+          `<span class="rule opt ${upperOk ? "good" : ""}">${upperOk ? "✓" : "•"} Include 1 uppercase letter (optional)</span>`,
+          `<span class="rule opt ${specialOk ? "good" : ""}">${specialOk ? "✓" : "•"} Include 1 special character (optional)</span>`
+        ].join("");
+
+        return { lenOk, upperOk, specialOk };
+      }
+
+      function setHint(el, text, kind){
+        if (!text) { el.style.display="none"; el.textContent=""; el.className="hint"; return; }
+        el.style.display="block";
+        el.textContent=text;
+        el.className="hint" + (kind ? (" " + kind) : "");
+      }
+
+      function setupShowPasswordForTwoFields(field1, field2, btn, icon){
+        let shown = false;
+        btn.addEventListener("click", () => {
+          shown = !shown;
+          const type = shown ? "text" : "password";
+          field1.type = type;
+          field2.type = type;
+          icon.src = shown ? "/login/images/showpass_on.svg" : "/login/images/showpass.svg";
+        });
+      }
+
+      // ===== Main =====
+      (async () => {
+        const supabase = await initSupabase();
+        if (!supabase) return;
+
+        const EMAIL_VERIFY_REDIRECT = "https://mog-academy.com/login/";
+        const PASSWORD_RESET_REDIRECT = "https://mog-academy.com/login/"; // same page handles reset state
+        const REDIRECT_AFTER_LOGIN = "https://app.mog-academy.com/student_dashboard";
+
+        // Refs
+        const loginForm = document.getElementById("loginForm");
+        const loginEmail = document.getElementById("loginEmail");
+        const loginPassword = document.getElementById("loginPassword");
+        const loginBtn = document.getElementById("loginBtn");
+        const toggleLoginPass = document.getElementById("toggleLoginPass");
+        const toggleLoginPassIcon = document.getElementById("toggleLoginPassIcon");
+
+        const registerForm = document.getElementById("registerForm");
+        const fullName = document.getElementById("fullName");
+        const username = document.getElementById("username");
+        const regEmail = document.getElementById("regEmail");
+        const regEmail2 = document.getElementById("regEmail2");
+        const regPassword = document.getElementById("regPassword");
+        const regPassword2 = document.getElementById("regPassword2");
+        const agree = document.getElementById("agree");
+        const newsletter = document.getElementById("newsletter");
+        const registerBtn = document.getElementById("registerBtn");
+
+        const usernameHint = document.getElementById("usernameHint");
+        const emailHint = document.getElementById("emailHint");
+        const passRules = document.getElementById("passRules");
+        const pass2Hint = document.getElementById("pass2Hint");
+
+        const forgotForm = document.getElementById("forgotForm");
+        const forgotEmail = document.getElementById("forgotEmail");
+        const forgotBtn = document.getElementById("forgotBtn");
+
+        const resetForm = document.getElementById("resetForm");
+        const newPass = document.getElementById("newPass");
+        const newPass2 = document.getElementById("newPass2");
+        const resetBtn = document.getElementById("resetBtn");
+        const resetRules = document.getElementById("resetRules");
+        const resetMatchHint = document.getElementById("resetMatchHint");
+        const toggleResetPassBoth = document.getElementById("toggleResetPassBoth");
+        const toggleResetPassBothIcon = document.getElementById("toggleResetPassBothIcon");
+
+        // Login show password (single field)
+        (function(){
+          let shown = false;
+          toggleLoginPass.addEventListener("click", () => {
+            shown = !shown;
+            loginPassword.type = shown ? "text" : "password";
+            toggleLoginPassIcon.src = shown ? "/login/images/showpass_on.svg" : "/login/images/showpass.svg";
+          });
+        })();
+
+        // Register show password: one toggle controls BOTH password fields
+        setupShowPasswordForTwoFields(
+          regPassword,
+          regPassword2,
+          document.getElementById("toggleRegPassBoth"),
+          document.getElementById("toggleRegPassBothIcon")
+        );
+
+        // Reset show password: one toggle controls BOTH reset password fields
+        setupShowPasswordForTwoFields(
+          newPass,
+          newPass2,
+          toggleResetPassBoth,
+          toggleResetPassBothIcon
+        );
+
+        // ===== Dynamic checks =====
+        let usernameAvailable = false;
+        let emailMatches = false;
+
+        const checkUsername = debounce(async () => {
+          const u = normalizeUsername(username.value);
+
+          if (u.length < 3) {
+            usernameAvailable = false;
+            setHint(usernameHint, "Username must be at least 3 characters.", "bad");
+            return;
+          }
+          if (!/^[a-zA-Z0-9._-]+$/.test(u)) {
+            usernameAvailable = false;
+            setHint(usernameHint, "Use only letters, numbers, dot, underscore, or dash.", "bad");
+            return;
+          }
+
+          setHint(usernameHint, "Checking availability...", "");
+
+          try {
+            const { data, error } = await supabase.rpc("is_username_available", { p_username: u });
+            if (error) throw error;
+
+            usernameAvailable = !!data;
+            setHint(usernameHint, usernameAvailable ? "Available" : "Username not available", usernameAvailable ? "good" : "bad");
+          } catch {
+            usernameAvailable = false;
+            setHint(usernameHint, "Could not check username right now.", "bad");
+          }
+        }, 350);
+
+        username.addEventListener("input", () => {
+          usernameAvailable = false;
+          setHint(usernameHint, "", "");
+          checkUsername();
+        });
+
+        function validateEmailsLive(){
+          const e1 = (regEmail.value || "").trim();
+          const e2 = (regEmail2.value || "").trim();
+
+          if (!e1 && !e2) { emailMatches = false; setHint(emailHint, "", ""); return; }
+          if (!e2) { emailMatches = false; setHint(emailHint, "Confirm your email to match.", ""); return; }
+
+          if (e1.toLowerCase() === e2.toLowerCase()) {
+            emailMatches = true;
+            setHint(emailHint, "Emails match", "good");
+          } else {
+            emailMatches = false;
+            setHint(emailHint, "Emails do not match", "bad");
+          }
+        }
+        regEmail.addEventListener("input", validateEmailsLive);
+        regEmail2.addEventListener("input", validateEmailsLive);
+
+        function validatePassMatchLive(passEl1, passEl2, hintEl){
+          const p1 = passEl1.value || "";
+          const p2 = passEl2.value || "";
+
+          if (!p1 && !p2) { setHint(hintEl, "", ""); return; }
+          if (!p2) { setHint(hintEl, "Confirm your password.", ""); return; }
+
+          if (p1 === p2) setHint(hintEl, "Passwords match", "good");
+          else setHint(hintEl, "Passwords do not match", "bad");
+        }
+
+        regPassword.addEventListener("input", () => {
+          renderPassRules(passRules, regPassword.value || "");
+          validatePassMatchLive(regPassword, regPassword2, pass2Hint);
+        });
+        regPassword2.addEventListener("input", () => validatePassMatchLive(regPassword, regPassword2, pass2Hint));
+
+        newPass.addEventListener("input", () => {
+          renderPassRules(resetRules, newPass.value || "");
+          validatePassMatchLive(newPass, newPass2, resetMatchHint);
+        });
+        newPass2.addEventListener("input", () => validatePassMatchLive(newPass, newPass2, resetMatchHint));
+
+        // ===== Email already registered check (reliable way) =====
+        function isEmailAlreadyRegisteredError(err){
+          const msg = (err?.message || "").toLowerCase();
+          return msg.includes("already registered") || msg.includes("user already") || msg.includes("email") && msg.includes("registered");
+        }
+
+        // ===== LOGIN submit =====
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          hideMsg(loginMsg);
+
+          const email = (loginEmail.value || "").trim();
+          const password = loginPassword.value || "";
+
+          if (!email || !password) {
+            showMsg(loginMsg, "Please enter email and password.");
+            return;
+          }
+
+          setLoading(loginBtn, true, "Login");
+
+          try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            showMsg(loginMsg, "Login successful. Redirecting...");
+            window.location.href = REDIRECT_AFTER_LOGIN;
+          } catch (err) {
+            showMsg(loginMsg, err?.message || "Login failed.");
+          } finally {
+            setLoading(loginBtn, false, "Login");
+          }
+        });
+
+        // ===== REGISTER submit =====
+        registerForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          hideMsg(registerMsg);
+
+          const nameVal = (fullName.value || "").trim();
+          const userVal = normalizeUsername(username.value);
+          const email1 = (regEmail.value || "").trim();
+          const email2 = (regEmail2.value || "").trim();
+          const pass1 = regPassword.value || "";
+          const pass2 = regPassword2.value || "";
+
+          const lenOk = pass1.length >= 8;
+
+          if (!nameVal || !userVal || !email1 || !email2 || !pass1 || !pass2) {
+            showMsg(registerMsg, "Please fill all fields.");
+            return;
+          }
+          if (email1.toLowerCase() !== email2.toLowerCase()) {
+            showMsg(registerMsg, "Emails do not match.");
+            return;
+          }
+          if (!lenOk) {
+            showMsg(registerMsg, "Password must be at least 8 characters.");
+            return;
+          }
+          if (pass1 !== pass2) {
+            showMsg(registerMsg, "Passwords do not match.");
+            return;
+          }
+          if (!agree.checked) {
+            showMsg(registerMsg, "You must agree to the Terms & Conditions and Privacy Policy.");
+            return;
+          }
+          if (!usernameAvailable) {
+            showMsg(registerMsg, "Please choose an available username.");
+            return;
+          }
+
+          setLoading(registerBtn, true, "Create account");
+
+          try {
+            const { error } = await supabase.auth.signUp({
+              email: email1,
+              password: pass1,
+              options: {
+                emailRedirectTo: EMAIL_VERIFY_REDIRECT,
+                data: {
+                  full_name: nameVal,
+                  username: userVal,
+                  newsletter_opt_in: !!newsletter.checked,
+                },
+              },
+            });
+
+            if (error) throw error;
+
+            showMsg(
+              registerMsg,
+              "Registration successful.\nCheck your email to verify your account.\nAfter verification, come back here and login."
+            );
+
+            setTimeout(() => {
+              registerForm.reset();
+              usernameAvailable = false;
+              emailMatches = false;
+              setHint(usernameHint, "", "");
+              setHint(emailHint, "", "");
+              passRules.style.display = "none";
+              setHint(pass2Hint, "", "");
+              showLogin();
+              showMsg(loginMsg, "Account created. Please login after verifying your email.");
+            }, 900);
+
+          } catch (err) {
+            if (isEmailAlreadyRegisteredError(err)) {
+              showMsg(registerMsg, "Email already registered, login here.");
+              // move user to login view after a moment
+              setTimeout(() => {
+                showLogin();
+                loginEmail.value = email1;
+                showMsg(loginMsg, "Email already registered. Please login.");
+              }, 900);
+            } else {
+              showMsg(registerMsg, err?.message || "Registration failed.");
+            }
+          } finally {
+            setLoading(registerBtn, false, "Create account");
+          }
+        });
+
+        // ===== Forgot password: send secure reset link =====
+        forgotForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          hideMsg(forgotMsg);
+
+          const email = (forgotEmail.value || "").trim();
+          if (!email) { showMsg(forgotMsg, "Please enter your email."); return; }
+
+          setLoading(forgotBtn, true, "Send reset link");
+          try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+              redirectTo: PASSWORD_RESET_REDIRECT
+            });
+            if (error) throw error;
+
+            showMsg(
+              forgotMsg,
+              "If an account exists for this email, a reset link has been sent.\nCheck your inbox."
+            );
+          } catch (err) {
+            showMsg(forgotMsg, err?.message || "Could not send reset email.");
+          } finally {
+            setLoading(forgotBtn, false, "Send reset link");
+          }
+        });
+
+        // ===== Reset password flow detection =====
+        // When user clicks the reset link, Supabase triggers PASSWORD_RECOVERY event.
+        supabase.auth.onAuthStateChange((event) => {
+          if (event === "PASSWORD_RECOVERY") {
+            showReset();
+            renderPassRules(resetRules, newPass.value || "");
+          }
+        });
+
+        // If the reset link opened this page, sometimes the event fires after init; we also check URL hash.
+        if (window.location.hash && window.location.hash.toLowerCase().includes("type=recovery")) {
+          showReset();
+        } else {
+          showLogin();
+        }
+
+        // ===== Reset password submit =====
+        resetForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          hideMsg(resetMsg);
+
+          const p1 = newPass.value || "";
+          const p2 = newPass2.value || "";
+          const lenOk = p1.length >= 8;
+
+          if (!lenOk) { showMsg(resetMsg, "Password must be at least 8 characters."); return; }
+          if (p1 !== p2) { showMsg(resetMsg, "Passwords do not match."); return; }
+
+          setLoading(resetBtn, true, "Update password");
+          try {
+            const { error } = await supabase.auth.updateUser({ password: p1 });
+            if (error) throw error;
+
+            showMsg(resetMsg, "Password updated successfully. You can now login.");
+            setTimeout(() => {
+              resetForm.reset();
+              resetRules.style.display = "none";
+              setHint(resetMatchHint, "", "");
+              // Clean the URL hash so it doesn't reopen reset view next time
+              history.replaceState(null, "", window.location.pathname);
+              showLogin();
+            }, 900);
+          } catch (err) {
+            showMsg(resetMsg, err?.message || "Could not update password.");
+          } finally {
+            setLoading(resetBtn, false, "Update password");
+          }
+        });
+
+      })();
+    </script>
+  </body>
+</html>
