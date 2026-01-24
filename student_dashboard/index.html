@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mo.G Academy — Thank You</title>
+  <style>
+    :root{
+      --orange:#ff9e0c;
+      --black:#111111;
+      --muted:#6b6b6b;
+      --line:#e9e9e9;
+      --soft:#fafafa;
+      --radius:22px;
+      --shadow: 0 18px 46px rgba(0,0,0,0.12);
+      --shadow2: 0 10px 22px rgba(0,0,0,0.06);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background: var(--orange);
+      color: var(--black);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px 18px;
+    }
+
+    .shell{
+      width: min(920px, 100%);
+      background:#fff;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(17,17,17,0.08);
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 20px;
+      border-bottom:1px solid var(--line);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 240px;
+    }
+
+    .logo-link{
+      display:inline-flex;
+      align-items:center;
+      text-decoration:none;
+      color:inherit;
+    }
+
+    .logo-img{
+      width:46px;
+      height:46px;
+      border-radius: 12px;
+      border:1px solid rgba(17,17,17,0.10);
+      background:#fff;
+      object-fit:contain;
+      padding:6px;
+      box-shadow: var(--shadow2);
+      transition: 0.18s ease;
+    }
+    .logo-link:hover .logo-img{
+      transform: translateY(-1px);
+      box-shadow: 0 16px 26px rgba(0,0,0,0.10);
+    }
+
+    .brandtxt .name{
+      font-weight:1000;
+      font-size:15px;
+      line-height:1.1;
+    }
+    .brandtxt .tag{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(17,17,17,0.12);
+      background:#fff;
+      font-size:13px;
+      font-weight:900;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      user-select:none;
+    }
+
+    .content{
+      padding: 26px 22px 22px;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfcfc 100%);
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+      box-shadow: var(--shadow2);
+      padding: 18px 18px 16px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:9px 12px;
+      border-radius: 999px;
+      font-size:12px;
+      border:1px solid rgba(255,158,12,0.45);
+      background: rgba(255,158,12,0.12);
+      font-weight:1000;
+      letter-spacing:0.2px;
+    }
+
+    h1{
+      margin: 12px 0 8px 0;
+      font-size: 22px;
+      line-height:1.2;
+      font-weight: 1100;
+      letter-spacing: 0.2px;
+    }
+
+    p{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 64ch;
+    }
+
+    .divider{
+      height:1px;
+      background: var(--line);
+      margin: 16px 0;
+    }
+
+    .follow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .follow-text{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .social{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .social a{
+      text-decoration:none;
+      color:inherit;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(17,17,17,0.12);
+      background:#fff;
+      transition:0.18s ease;
+      font-size:13px;
+      font-weight:1000;
+    }
+    .social a:hover{
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+      border-color: rgba(255,158,12,0.5);
+    }
+
+    .icon{
+      width:18px;
+      height:18px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .footer{
+      padding: 14px 20px 18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+      background:#fff;
+    }
+    .footer a{
+      color: var(--black);
+      font-weight: 1000;
+      text-decoration:none;
+      border-bottom:1px solid rgba(17,17,17,0.18);
+      padding-bottom:2px;
+    }
+
+    @media (max-width: 600px){
+      .brand{min-width:auto}
+      h1{font-size:20px}
+      .social a{width:100%; justify-content:center}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <a class="logo-link" href="https://mog-academy.com" aria-label="Go to Mo.G Academy homepage">
+          <img class="logo-img" src="logo.png" alt="Mo.G Academy logo" />
+        </a>
+        <div class="brandtxt">
+          <div class="name">Mo.G Academy</div>
+          <div class="tag">Registration Confirmed</div>
+        </div>
+      </div>
+
+      <div class="chip" title="Status">✅ Registered</div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="badge">Thank you</div>
+        <h1>Thank you for registering! Your account and voucher will be ready once the website is launched, stay tuned!</h1>
+        <p>
+          We’re finalizing the platform experience and preparing your access.
+          Follow Mo.G Academy to stay updated and be the first to know when we launch.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="follow">
+          <div class="follow-text">Follow Mo.G Academy to stay updated</div>
+
+          <div class="social" aria-label="Social media links">
+            <!-- Replace href values with your real links -->
+            <a href="https://www.linkedin.com" target="_blank" rel="noopener">
+              <img class="icon" src="linkedin.png" alt="" />
+              LinkedIn
+            </a>
+
+            <a href="https://www.instagram.com" target="_blank" rel="noopener">
+              <img class="icon" src="instagram.png" alt="" />
+              Instagram
+            </a>
+
+            <a href="https://www.youtube.com" target="_blank" rel="noopener">
+              <img class="icon" src="youtube.png" alt="" />
+              YouTube
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>© <span id="y"></span> Mo.G Academy</div>
+      <div>
+        <a href="https://mog-academy.com">mog-academy.com</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
