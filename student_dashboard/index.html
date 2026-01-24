@@ -79,12 +79,6 @@
       line-height:1.1;
       letter-spacing:0.2px;
     }
-    .brandtxt .tag{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px;
-      font-weight:400;
-    }
 
     .content{
       padding: 34px 22px 26px;
@@ -104,16 +98,16 @@
       align-items:center;
       justify-content:center;
       text-align:center;
-      gap:14px;
+      gap:16px;
       padding: 10px 6px 6px;
     }
 
     .hero{
       margin:0;
-      font-size: 36px;
-      line-height:1.05;
-      letter-spacing: 0.6px;
-      font-weight: 700;
+      font-size: 26px; /* smaller than before */
+      line-height:1.15;
+      letter-spacing: 0.4px;
+      font-weight: 600;
       text-transform: uppercase;
     }
 
@@ -126,8 +120,23 @@
       font-weight: 400;
     }
 
+    .social-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+
+    .follow-text{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
     .social-row{
-      margin-top: 10px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -184,9 +193,10 @@
     }
 
     @media (max-width: 600px){
-      .hero{font-size:30px}
+      .hero{font-size:22px}
       .card{padding: 22px 14px 18px}
       .social-icon, .social-icon img{width:42px;height:42px}
+      .follow-text{white-space: normal; text-align:center}
     }
   </style>
 </head>
@@ -200,7 +210,6 @@
         </a>
         <div class="brandtxt">
           <div class="name">Mo.G Academy</div>
-          <div class="tag">Stay tuned</div>
         </div>
       </div>
       <div style="width:46px;height:46px;"></div>
@@ -215,19 +224,23 @@
             Thank you for registering! Your account and voucher will be ready once the website is launched, stay tuned!
           </p>
 
-          <div class="social-row" aria-label="Social media links">
-            <!-- Replace href values with your real profile links -->
-            <a class="social-icon" href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
-              <img src="linkedin.png" alt="" />
-            </a>
+          <div class="social-wrap" aria-label="Social media links">
+            <div class="follow-text">Follow us on social media to stay updated:</div>
 
-            <a class="social-icon" href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
-              <img src="instagram.png" alt="" />
-            </a>
+            <div class="social-row">
+              <!-- Replace href values with your real profile links -->
+              <a class="social-icon" href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
+                <img src="linkedin.png" alt="" />
+              </a>
 
-            <a class="social-icon" href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
-              <img src="youtube.png" alt="" />
-            </a>
+              <a class="social-icon" href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
+                <img src="instagram.png" alt="" />
+              </a>
+
+              <a class="social-icon" href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
+                <img src="youtube.png" alt="" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
