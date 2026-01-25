@@ -300,8 +300,7 @@
   </div>
 
   <!-- Hidden certificate render target -->
-  <div id="certWrap" style="position:fixed;left:-99999px;top:0;width:1200px;">
-    <div id="certificate"
+<div id="certificate"
      style="
       width:1200px;height:850px;
       background:#fff;
@@ -327,6 +326,12 @@
          " />
   </div>
 
+  <!-- Hidden fields to satisfy existing JS (do not remove) -->
+  <div style="position:absolute; left:-99999px; top:0; width:1px; height:1px; overflow:hidden;">
+    <span id="certEmail"></span>
+    <span id="certFullName"></span>
+  </div>
+
   <!-- Title -->
   <div style="margin-top:38px;text-align:center;">
     <div style="font-size:48px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;">
@@ -337,7 +342,8 @@
       This certifies that
     </div>
 
-    <div id="certFullName"
+    <!-- IMPORTANT: keep this ID because your JS likely sets it -->
+    <div id="certStudentName"
          style="
           margin-top:18px;
           font-size:42px;
@@ -349,7 +355,7 @@
     </div>
 
     <div style="margin-top:18px;font-size:18px;font-weight:700;">
-      <span id="certCourseTitle">Course Title</span>
+      <span id="certCourseTitle">D5 User Certification Training Program</span>
     </div>
   </div>
 
@@ -382,7 +388,7 @@
   ">
     <div>
       <div style="font-size:12px;color:#7a7a7a;margin-bottom:8px;">Instructor</div>
-      <div id="certInstructor" style="font-size:16px;font-weight:800;">Instructor Name</div>
+      <div id="certInstructor" style="font-size:16px;font-weight:800;">Mohamed Elgaili</div>
     </div>
 
     <div style="text-align:right;">
@@ -402,6 +408,7 @@
   </div>
 
 </div>
+
 
 
   <!-- Libraries -->
