@@ -309,11 +309,12 @@
       font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
       color:#111;
       box-sizing:border-box;
-      position:relative;
+      display:flex;
+      flex-direction:column;
      ">
 
-  <!-- Top centered logo only (no borders, no text, no stretching) -->
-  <div style="width:100%;display:flex;justify-content:center;align-items:center;">
+  <!-- Top centered logo only -->
+  <div style="display:flex;justify-content:center;align-items:center;">
     <img id="certLogo"
          src="logo.png"
          alt="Mo.G Academy logo"
@@ -326,13 +327,13 @@
          " />
   </div>
 
-  <!-- Hidden fields to satisfy existing JS (do not remove) -->
+  <!-- Hidden fields required by your JS (do not remove) -->
   <div style="position:absolute; left:-99999px; top:0; width:1px; height:1px; overflow:hidden;">
     <span id="certEmail"></span>
     <span id="certFullName"></span>
   </div>
 
-  <!-- Title -->
+  <!-- Header -->
   <div style="margin-top:38px;text-align:center;">
     <div style="font-size:48px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;">
       Certificate of Completion
@@ -342,7 +343,6 @@
       This certifies that
     </div>
 
-    <!-- IMPORTANT: keep this ID because your JS likely sets it -->
     <div id="certStudentName"
          style="
           margin-top:18px;
@@ -359,39 +359,41 @@
     </div>
   </div>
 
-  <!-- Integrated paragraph (bold only the dynamic values) -->
-  <div style="margin-top:56px;display:flex;justify-content:center;">
+  <!-- Main paragraph (flex item) -->
+  <div style="margin-top:52px;display:flex;justify-content:center;flex:1;">
     <div style="
-      max-width: 860px;
+      max-width: 880px;
       text-align:center;
       font-size:16px;
-      line-height:1.8;
+      line-height:1.9;
       color:#555;
       letter-spacing:0.1px;
+      align-self:center;
     ">
-      This certificate proudly recognizes the successful completion of the program requirements,
-      representing a total of <b><span id="certHours">14 hours</span></b> of structured training concluded on
-      <b><span id="certDate">January 25, 2026</span></b>, and warmly congratulates the participant on this
-      achievement, acknowledging their dedication and effort while noting their affiliation with the company
-      <b><span id="certCompany">Calcium</span></b> and their fulfillment of all the necessary criteria for formal
-      recognition.
+      This certificate proudly recognizes the successful completion of the program requirements, representing a total of
+      <b><span id="certHours">14 hours</span></b>
+      of structured training concluded on
+      <b><span id="certDate">January 25, 2026</span></b>,
+      and warmly congratulates the participant on this achievement, acknowledging their dedication and effort while noting
+      their affiliation with the company <b><span id="certCompany">Calcium</span></b> and their fulfillment of all the necessary
+      criteria for formal recognition.
     </div>
   </div>
 
-  <!-- Footer row: Instructor + Signature -->
+  <!-- Footer (always at bottom, no overlap) -->
   <div style="
-    position:absolute;
-    left:80px; right:80px; bottom:62px;
+    margin-top:auto;
     display:flex;
     justify-content:space-between;
     align-items:flex-end;
+    gap:40px;
   ">
     <div>
       <div style="font-size:12px;color:#7a7a7a;margin-bottom:8px;">Instructor</div>
       <div id="certInstructor" style="font-size:16px;font-weight:800;">Mohamed Elgaili</div>
     </div>
 
-    <div style="text-align:right;">
+    <div style="text-align:right;min-width:260px;">
       <img id="certSign"
            src="mysign.png"
            alt="Instructor signature"
@@ -408,6 +410,7 @@
   </div>
 
 </div>
+
 
 
 
