@@ -209,6 +209,7 @@
       padding: 12px;
       white-space:pre-wrap;
       overflow:auto;
+      display:none; /* hidden by default; shown only for admins */
     }
 
     .footer{
@@ -267,13 +268,15 @@
           <div class="social-wrap" aria-label="Social media links">
             <div class="follow-text">Follow us on social media to stay updated:</div>
             <div class="social-row">
-              <a class="social-icon" href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
+               <a class="social-icon" href="https://www.linkedin.com/company/mog-academy/" target="_blank" rel="noopener" aria-label="Mo.G Academy on LinkedIn">
                 <img src="linkedin.png" alt="" />
               </a>
-              <a class="social-icon" href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
+
+              <a class="social-icon" href="https://www.instagram.com/mo.g_academy/" target="_blank" rel="noopener" aria-label="Mo.G Academy on Instagram">
                 <img src="instagram.png" alt="" />
               </a>
-              <a class="social-icon" href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
+
+              <a class="social-icon" href="https://www.youtube.com/@mo.gacademy" target="_blank" rel="noopener" aria-label="Mo.G Academy on YouTube">
                 <img src="youtube.png" alt="" />
               </a>
             </div>
@@ -288,7 +291,7 @@
             <div id="certStatus" class="status"></div>
           </div>
 
-          <div id="debug" class="debug">Booting…</div>
+          <div id="debug" class="debug"></div>
         </div>
       </div>
     </div>
@@ -299,7 +302,7 @@
     </div>
   </div>
 
-  <!-- ✅ Hidden certificate render target (OFF-SCREEN, not visible on page) -->
+  <!-- Hidden certificate render target (OFF-SCREEN, not visible on page) -->
   <div id="certWrap" style="position:fixed;left:-99999px;top:0;width:1200px;height:850px;">
     <div id="certificate"
          style="
@@ -314,7 +317,7 @@
           flex-direction:column;
          ">
 
-      <!-- Top centered logo only (bigger, proportional, no text, no borders) -->
+      <!-- Top centered logo only -->
       <div style="display:flex;justify-content:center;align-items:center;">
         <img id="certLogo"
              src="logo.png"
@@ -339,7 +342,6 @@
           This certifies that
         </div>
 
-        <!-- ✅ Visible name uses this ID -->
         <div id="certStudentName"
              style="margin-top:18px;font-size:42px;font-weight:800;letter-spacing:0.2px;line-height:1.15;">
           Full Name
@@ -371,7 +373,7 @@
         </div>
       </div>
 
-      <!-- Footer (no overlap) -->
+      <!-- Footer -->
       <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:40px;">
         <div>
           <div style="font-size:12px;color:#7a7a7a;margin-bottom:8px;">Instructor</div>
@@ -416,12 +418,22 @@
     const whoamiEl = document.getElementById("whoami");
     const debugEl = document.getElementById("debug");
 
-    function log(s){ debugEl.textContent += s + "\n"; }
+    // admin-only debug
+    let IS_ADMIN = false;
+
+    function log(s){
+      if (!IS_ADMIN) return;
+      debugEl.textContent += s + "\n";
+    }
     function setStatus(s){ statusEl.textContent = s || ""; }
+
+    function showDebugIfAdmin(){
+      debugEl.style.display = IS_ADMIN ? "block" : "none";
+      if (IS_ADMIN && !debugEl.textContent) debugEl.textContent = "Booting…\n";
+    }
 
     function fmtDate(d) {
       if (!d) return "";
-      // Supports both '2026-01-25' and timestamptz
       const dt = new Date(d);
       if (isNaN(dt.getTime())) {
         const dt2 = new Date(String(d) + "T00:00:00");
@@ -439,7 +451,7 @@
     function bootFail(msg){
       whoamiEl.innerHTML = 'Signed in as: <b>error</b>';
       setStatus(msg);
-      log("BOOT FAIL: " + msg);
+      if (IS_ADMIN) log("BOOT FAIL: " + msg);
     }
 
     async function withTimeout(promise, ms, label){
@@ -466,15 +478,17 @@
         imgEl.onload = done;
         imgEl.onerror = done;
 
-        // cache-bust so html2canvas sees it reliably
         const src = imgEl.getAttribute("src");
         if (src && !src.includes("?cb=")) imgEl.src = src + "?cb=" + Date.now();
       });
     }
 
     async function main(){
+      // keep debug hidden until we confirm admin
+      IS_ADMIN = false;
       debugEl.textContent = "";
-      log("Domain: " + location.origin);
+      showDebugIfAdmin();
+
       setStatus("Checking certificate eligibility…");
 
       if (!window.supabase || !window.supabase.createClient) {
@@ -488,49 +502,55 @@
       }
 
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      log("Supabase SDK: loaded");
 
+      // session + user
       const sessionRes = await withTimeout(supabase.auth.getSession(), 5000, "getSession");
       const session = sessionRes?.data?.session || null;
-      log("Session exists: " + (session ? "yes" : "no"));
 
       const userRes = await withTimeout(supabase.auth.getUser(), 5000, "getUser");
       const user = userRes?.data?.user || null;
 
-      log("User id: " + (user?.id || "null"));
-      log("User email: " + (user?.email || "null"));
-
       if (!user) {
         whoamiEl.innerHTML = 'Signed in as: <b>not logged in on this page</b>';
         setStatus("No login session found on this page.");
-        log("If you logged in on another subdomain, this page won’t see that session.");
         return;
       }
 
       whoamiEl.innerHTML = 'Signed in as: <b>' + (user.email || "unknown") + '</b>';
 
-      // ✅ Name comes ONLY from profiles.full_name
+      // profile (we need role here)
       const profileRes = await withTimeout(
-        supabase.from(USER_TABLE).select("full_name,email").eq("id", user.id).maybeSingle(),
+        supabase.from(USER_TABLE).select("full_name,email,role").eq("id", user.id).maybeSingle(),
         7000,
         "profile query"
       );
+
       const profile = profileRes?.data || null;
       const profileErr = profileRes?.error || null;
 
+      // ✅ Determine admin role now
+      IS_ADMIN = (String(profile?.role || "").toLowerCase() === "admin");
+      showDebugIfAdmin();
+
+      // only now start logging
+      log("Domain: " + location.origin);
+      log("Supabase SDK: loaded");
+      log("Session exists: " + (session ? "yes" : "no"));
+      log("User id: " + (user?.id || "null"));
+      log("User email: " + (user?.email || "null"));
       log("Profile table: " + USER_TABLE);
       log("Profile found: " + (profile ? "yes" : "no"));
       if (profileErr) log("Profile error: " + profileErr.message);
+      log("Role: " + (profile?.role || "null"));
 
       const fullName = (profile?.full_name || "").trim();
       if (!fullName) {
         setStatus("Your profile is missing full_name. Please complete your registration profile.");
         return;
       }
-
       const email = (profile?.email || user.email || "—").trim();
 
-      // Certificate row
+      // certificate
       const certRes = await withTimeout(
         supabase
           .from(CERT_TABLE)
@@ -575,11 +595,9 @@
       };
 
       function fillCertificateTemplate(row) {
-        // keep both (some older code references certFullName)
         const elFullName = document.getElementById("certFullName");
         if (elFullName) elFullName.textContent = row.full_name || "—";
 
-        // ✅ this is the visible one in the design
         const elStudentName = document.getElementById("certStudentName");
         if (elStudentName) elStudentName.textContent = row.full_name || "—";
 
@@ -601,7 +619,6 @@
         try{
           fillCertificateTemplate(combinedData);
 
-          // ensure images are loaded before capture
           await waitForImage(document.getElementById("certLogo"));
           await waitForImage(document.getElementById("certSign"));
 
@@ -621,7 +638,6 @@
           const imgData = canvas.toDataURL("image/png");
           const { jsPDF } = window.jspdf;
 
-          // ✅ Keep size exactly like before (1200x850)
           const pdf = new jsPDF({
             orientation: "landscape",
             unit: "px",
@@ -630,7 +646,6 @@
 
           pdf.addImage(imgData, "PNG", 0, 0, 1200, 850);
 
-          // ✅ define file (fixes your error)
           const file = `MoG_Certificate_${safeFileName(combinedData.course_id)}_${safeFileName(combinedData.full_name)}.pdf`;
           pdf.save(file);
 
