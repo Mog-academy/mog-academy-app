@@ -299,120 +299,97 @@
     </div>
   </div>
 
-  <!-- Hidden certificate render target -->
-<div id="certificate"
-     style="
-      width:1200px;height:850px;
-      background:#fff;
-      border:12px solid #ff9e0c;
-      padding:70px 80px 64px;
-      font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
-      color:#111;
-      box-sizing:border-box;
-      display:flex;
-      flex-direction:column;
-     ">
-
-  <!-- Top centered logo only -->
-  <div style="display:flex;justify-content:center;align-items:center;">
-    <img id="certLogo"
-         src="logo.png"
-         alt="Mo.G Academy logo"
-         crossorigin="anonymous"
+  <!-- ✅ Hidden certificate render target (OFF-SCREEN, not visible on page) -->
+  <div id="certWrap" style="position:fixed;left:-99999px;top:0;width:1200px;height:850px;">
+    <div id="certificate"
          style="
-          width:240px;
-          height:auto;
-          object-fit:contain;
-          display:block;
-         " />
-  </div>
-
-  <!-- Hidden fields required by your JS (do not remove) -->
-  <div style="position:absolute; left:-99999px; top:0; width:1px; height:1px; overflow:hidden;">
-    <span id="certEmail"></span>
-    <span id="certFullName"></span>
-  </div>
-
-  <!-- Header -->
-  <div style="margin-top:38px;text-align:center;">
-    <div style="font-size:48px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;">
-      Certificate of Completion
-    </div>
-
-    <div style="margin-top:46px;font-size:14px;color:#7a7a7a;letter-spacing:0.2px;">
-      This certifies that
-    </div>
-
-    <div id="certStudentName"
-         style="
-          margin-top:18px;
-          font-size:42px;
-          font-weight:800;
-          letter-spacing:0.2px;
-          line-height:1.15;
+          width:1200px;height:850px;
+          background:#fff;
+          border:12px solid #ff9e0c;
+          padding:70px 80px 64px;
+          font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+          color:#111;
+          box-sizing:border-box;
+          display:flex;
+          flex-direction:column;
          ">
-      Full Name
-    </div>
 
-    <div style="margin-top:18px;font-size:18px;font-weight:700;">
-      <span id="certCourseTitle">D5 User Certification Training Program</span>
+      <!-- Top centered logo only (bigger, proportional, no text, no borders) -->
+      <div style="display:flex;justify-content:center;align-items:center;">
+        <img id="certLogo"
+             src="logo.png"
+             alt="Mo.G Academy logo"
+             crossorigin="anonymous"
+             style="width:240px;height:auto;object-fit:contain;display:block;" />
+      </div>
+
+      <!-- Required IDs for JS (kept hidden) -->
+      <div style="position:absolute;left:-99999px;top:0;width:1px;height:1px;overflow:hidden;">
+        <span id="certEmail"></span>
+        <span id="certFullName"></span>
+      </div>
+
+      <!-- Header -->
+      <div style="margin-top:38px;text-align:center;">
+        <div style="font-size:48px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;">
+          Certificate of Completion
+        </div>
+
+        <div style="margin-top:46px;font-size:14px;color:#7a7a7a;letter-spacing:0.2px;">
+          This certifies that
+        </div>
+
+        <!-- ✅ Visible name uses this ID -->
+        <div id="certStudentName"
+             style="margin-top:18px;font-size:42px;font-weight:800;letter-spacing:0.2px;line-height:1.15;">
+          Full Name
+        </div>
+
+        <div style="margin-top:18px;font-size:18px;font-weight:700;">
+          <span id="certCourseTitle">D5 User Certification Training Program</span>
+        </div>
+      </div>
+
+      <!-- Main paragraph -->
+      <div style="margin-top:52px;display:flex;justify-content:center;flex:1;">
+        <div style="
+          max-width: 880px;
+          text-align:center;
+          font-size:16px;
+          line-height:1.9;
+          color:#555;
+          letter-spacing:0.1px;
+          align-self:center;
+        ">
+          This certificate proudly recognizes the successful completion of the program requirements, representing a total of
+          <b><span id="certHours">14 hours</span></b>
+          of structured training concluded on
+          <b><span id="certDate">January 25, 2026</span></b>,
+          and warmly congratulates the participant on this achievement, acknowledging their dedication and effort while noting
+          their affiliation with the company <b><span id="certCompany">Calcium</span></b> and their fulfillment of all the necessary
+          criteria for formal recognition.
+        </div>
+      </div>
+
+      <!-- Footer (no overlap) -->
+      <div style="margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:40px;">
+        <div>
+          <div style="font-size:12px;color:#7a7a7a;margin-bottom:8px;">Instructor</div>
+          <div id="certInstructor" style="font-size:16px;font-weight:800;">Mohamed Elgaili</div>
+        </div>
+
+        <div style="text-align:right;min-width:260px;">
+          <img id="certSign"
+               src="mysign.png"
+               alt="Instructor signature"
+               crossorigin="anonymous"
+               style="height:72px;width:auto;object-fit:contain;display:block;margin-left:auto;" />
+          <div style="margin-top:10px;font-size:12px;color:#7a7a7a;">Signature</div>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <!-- Main paragraph (flex item) -->
-  <div style="margin-top:52px;display:flex;justify-content:center;flex:1;">
-    <div style="
-      max-width: 880px;
-      text-align:center;
-      font-size:16px;
-      line-height:1.9;
-      color:#555;
-      letter-spacing:0.1px;
-      align-self:center;
-    ">
-      This certificate proudly recognizes the successful completion of the program requirements, representing a total of
-      <b><span id="certHours">14 hours</span></b>
-      of structured training concluded on
-      <b><span id="certDate">January 25, 2026</span></b>,
-      and warmly congratulates the participant on this achievement, acknowledging their dedication and effort while noting
-      their affiliation with the company <b><span id="certCompany">Calcium</span></b> and their fulfillment of all the necessary
-      criteria for formal recognition.
-    </div>
-  </div>
-
-  <!-- Footer (always at bottom, no overlap) -->
-  <div style="
-    margin-top:auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    gap:40px;
-  ">
-    <div>
-      <div style="font-size:12px;color:#7a7a7a;margin-bottom:8px;">Instructor</div>
-      <div id="certInstructor" style="font-size:16px;font-weight:800;">Mohamed Elgaili</div>
-    </div>
-
-    <div style="text-align:right;min-width:260px;">
-      <img id="certSign"
-           src="mysign.png"
-           alt="Instructor signature"
-           crossorigin="anonymous"
-           style="
-            height:72px;
-            width:auto;
-            object-fit:contain;
-            display:block;
-            margin-left:auto;
-           " />
-      <div style="margin-top:10px;font-size:12px;color:#7a7a7a;">Signature</div>
-    </div>
-  </div>
-
-</div>
-
-
-
 
   <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -428,7 +405,7 @@
     const SUPABASE_URL = "https://yijcnkcaibspxbpvmzhd.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlpamNua2NhaWJzcHhicHZtemhkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjQ0MDksImV4cCI6MjA4NDUwMDQwOX0.NqsgzQ8z9UKahVdbjXp9-yA2Y5F3yFveaF9mLzAXLl4";
 
-    const USER_TABLE = "profiles";     // unified full_name lives here
+    const USER_TABLE = "profiles";
     const CERT_TABLE = "course_certificates";
 
     const COURSE_ID = "D5 User Certification Training Program";
@@ -444,7 +421,14 @@
 
     function fmtDate(d) {
       if (!d) return "";
-      const dt = new Date(d + "T00:00:00");
+      // Supports both '2026-01-25' and timestamptz
+      const dt = new Date(d);
+      if (isNaN(dt.getTime())) {
+        const dt2 = new Date(String(d) + "T00:00:00");
+        return isNaN(dt2.getTime())
+          ? String(d)
+          : dt2.toLocaleDateString(undefined, { year:"numeric", month:"long", day:"numeric" });
+      }
       return dt.toLocaleDateString(undefined, { year:"numeric", month:"long", day:"numeric" });
     }
 
@@ -482,6 +466,7 @@
         imgEl.onload = done;
         imgEl.onerror = done;
 
+        // cache-bust so html2canvas sees it reliably
         const src = imgEl.getAttribute("src");
         if (src && !src.includes("?cb=")) imgEl.src = src + "?cb=" + Date.now();
       });
@@ -524,7 +509,7 @@
 
       whoamiEl.innerHTML = 'Signed in as: <b>' + (user.email || "unknown") + '</b>';
 
-      // ✅ Profile is the ONLY name source
+      // ✅ Name comes ONLY from profiles.full_name
       const profileRes = await withTimeout(
         supabase.from(USER_TABLE).select("full_name,email").eq("id", user.id).maybeSingle(),
         7000,
@@ -537,15 +522,15 @@
       log("Profile found: " + (profile ? "yes" : "no"));
       if (profileErr) log("Profile error: " + profileErr.message);
 
-      if (!profile || !profile.full_name || !profile.full_name.trim()) {
+      const fullName = (profile?.full_name || "").trim();
+      if (!fullName) {
         setStatus("Your profile is missing full_name. Please complete your registration profile.");
         return;
       }
 
-      const fullName = profile.full_name.trim();
-      const email = profile?.email || user.email || "—";
+      const email = (profile?.email || user.email || "—").trim();
 
-      // ✅ Certificate row: NO student_name column
+      // Certificate row
       const certRes = await withTimeout(
         supabase
           .from(CERT_TABLE)
@@ -590,8 +575,17 @@
       };
 
       function fillCertificateTemplate(row) {
-        document.getElementById("certFullName").textContent = row.full_name || "—";
-        document.getElementById("certEmail").textContent = row.email || "—";
+        // keep both (some older code references certFullName)
+        const elFullName = document.getElementById("certFullName");
+        if (elFullName) elFullName.textContent = row.full_name || "—";
+
+        // ✅ this is the visible one in the design
+        const elStudentName = document.getElementById("certStudentName");
+        if (elStudentName) elStudentName.textContent = row.full_name || "—";
+
+        const elEmail = document.getElementById("certEmail");
+        if (elEmail) elEmail.textContent = row.email || "—";
+
         document.getElementById("certCompany").textContent = row.company || "—";
         document.getElementById("certDate").textContent = fmtDate(row.completion_date);
         document.getElementById("certHours").textContent = (row.hours ?? "") + " hours";
@@ -607,28 +601,38 @@
         try{
           fillCertificateTemplate(combinedData);
 
+          // ensure images are loaded before capture
           await waitForImage(document.getElementById("certLogo"));
           await waitForImage(document.getElementById("certSign"));
 
-          const canvas = await html2canvas(document.getElementById("certificate"), {
+          const certEl = document.getElementById("certificate");
+
+          const canvas = await html2canvas(certEl, {
             scale: 2,
             useCORS: true,
             allowTaint: false,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            width: 1200,
+            height: 850,
+            windowWidth: 1200,
+            windowHeight: 850
           });
 
           const imgData = canvas.toDataURL("image/png");
-const { jsPDF } = window.jspdf;
+          const { jsPDF } = window.jspdf;
 
-// Make PDF page exactly match the captured canvas size (pixel-perfect)
-const pdf = new jsPDF({
-  orientation: canvas.width >= canvas.height ? "landscape" : "portrait",
-  unit: "px",
-  format: [canvas.width, canvas.height]
-});
+          // ✅ Keep size exactly like before (1200x850)
+          const pdf = new jsPDF({
+            orientation: "landscape",
+            unit: "px",
+            format: [1200, 850]
+          });
 
-pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-pdf.save(file);
+          pdf.addImage(imgData, "PNG", 0, 0, 1200, 850);
+
+          // ✅ define file (fixes your error)
+          const file = `MoG_Certificate_${safeFileName(combinedData.course_id)}_${safeFileName(combinedData.full_name)}.pdf`;
+          pdf.save(file);
 
         } catch(e){
           log("PDF error: " + e.message);
