@@ -618,20 +618,18 @@
           });
 
           const imgData = canvas.toDataURL("image/png");
-          const { jsPDF } = window.jspdf;
+const { jsPDF } = window.jspdf;
 
-          const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const pageHeight = pdf.internal.pageSize.getHeight();
+// Make PDF page exactly match the captured canvas size (pixel-perfect)
+const pdf = new jsPDF({
+  orientation: canvas.width >= canvas.height ? "landscape" : "portrait",
+  unit: "px",
+  format: [canvas.width, canvas.height]
+});
 
-          const imgWidth = pageWidth;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          const y = (pageHeight - imgHeight) / 2;
+pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+pdf.save(file);
 
-          pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
-
-          const file = `MoG_Certificate_${safeFileName(combinedData.course_id)}_${safeFileName(combinedData.full_name)}.pdf`;
-          pdf.save(file);
         } catch(e){
           log("PDF error: " + e.message);
           setStatus("Could not generate the certificate. Check debug box.");
